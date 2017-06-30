@@ -1,16 +1,21 @@
-var removePreviousDivs = function() {
-  divs = document.getElementsByClassName('colordiv');
-  Object.keys(divs).forEach(() => {
-    if (divs[0]) {
-      divs[0].parentNode.removeChild(divs[0]);
-    }
-  });
-}
 
 var log = function(message) {
   chrome.tabs.executeScript(null, {
     code: `
-      console.log('${message}')
+      console.log(JSON.parse('${JSON.stringify(message)}'));
+    `
+  });
+}
+var removePreviousDivs = function(tabId) {
+  chrome.tabs.executeScript(tabId, {
+    code: `
+      divs = document.getElementsByClassName('colordiv');
+      console.log(divs.length);
+      Object.keys(divs).forEach(() => {
+        if (divs[0]) {
+          divs[0].parentNode.removeChild(divs[0]);
+        }
+      });
     `
   });
 }
@@ -18,7 +23,7 @@ var log = function(message) {
 document.addEventListener('DOMContentLoaded', function () {
   chrome.tabs.onUpdated.addListener(
     function(tabId, changeInfo, tab) {
-      removePreviousDivs();
+      removePreviousDivs(tabId);
       if (tab.url){
         var prefs = JSON.parse(window.localStorage.getItem('urlColorPrefs'));
         var urlColorPairs = prefs.urlColorPairs || '';
