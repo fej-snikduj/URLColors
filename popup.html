@@ -4,21 +4,49 @@
     <title>URL Colors</title>
     <style>
     body {
-      overflow: hidden;
+      overflow: auto;
       margin: 0px;
       padding: 0px;
       background: white;
-    }
-
-    textarea {
       width: 500px;
       height: 800px;
       font-size: 1rem;
+    }
+    .settings {
+      width: 100%;
+      margin: 10px;
+    }
+    textArea {
+      height: 350px;
+      width: 50%;
+    }
+    input {
+      width: 25%;
     }
     </style>
     <script src="popup.js"></script>
   </head>
   <body>
-    <textarea></textarea>
+    <div class="settings">
+      <h3> Settings </h3>
+      <div>
+        Border Width: <input type="text" name="border-width" placeholder="15px"><br>
+      </div>
+      <div>
+        Opacity: <input type="text" name="opacity" placeholder=".2"><br>
+      </div>
+    </div>
+    <div class="settings">
+      <h3> Url Keyword/Color Pairs </h3>
+
+      <div>
+        <textarea id="url-settings"
+          placeholder=
+"google.com, blue
+facebook.com, green
+anythinghere, pink"
+        ></textarea>
+      </div>
+    </div>
   </body>
 </html>

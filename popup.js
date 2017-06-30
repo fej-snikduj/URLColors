@@ -1,12 +1,30 @@
+var updateLocalStorage = function(property, value) {
+  let storage = JSON.parse(localStorage.getItem('urlColorPrefs') || "{}");
+  storage[property] = value;
+  localStorage.setItem('urlColorPrefs', JSON.stringify(storage));
+};
+
 document.addEventListener('DOMContentLoaded', function () {
   var localStorage = window.localStorage;
-  var textArea = document.querySelector('textarea');
+  var urlColorPairs = document.querySelector('textarea');
+  var opacityInput = document.querySelector('input[name="opacity"]');
+  var borderWidthInput = document.querySelector('input[name="border-width"]')
 
-  if (localStorage.getItem('colorPrefs')) {
-    textArea.value = localStorage.getItem('colorPrefs');
-  }
+  var prefs = JSON.parse(localStorage.getItem('urlColorPrefs') || "{}");
+  urlColorPairs.value = prefs.urlColorPairs || '';
+  opacityInput.value = prefs.opacity || .2;
+  borderWidthInput.value = prefs.borderWidth || '15px';
 
-  textArea.addEventListener('input', function(e) {
-    localStorage.setItem('colorPrefs', e.target.value)
+  urlColorPairs.addEventListener('input', function(e) {
+    updateLocalStorage('urlColorPairs', e.target.value);
   }, false);
+
+  opacityInput.addEventListener('input', function(e) {
+    updateLocalStorage('opacity', e.target.value);
+  }, false);
+
+  borderWidthInput.addEventListener('input', function(e) {
+    updateLocalStorage('borderWidth', e.target.value);
+  }, false);
+
 });
