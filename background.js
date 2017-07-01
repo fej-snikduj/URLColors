@@ -1,16 +1,8 @@
 
-var log = function(message) {
-  chrome.tabs.executeScript(null, {
-    code: `
-      console.log(JSON.parse('${JSON.stringify(message)}'));
-    `
-  });
-}
 var removePreviousDivs = function(tabId) {
   chrome.tabs.executeScript(tabId, {
     code: `
       divs = document.getElementsByClassName('colordiv');
-      console.log(divs.length);
       Object.keys(divs).forEach(() => {
         if (divs[0]) {
           divs[0].parentNode.removeChild(divs[0]);
@@ -26,21 +18,23 @@ var addDivsToPage = function(tabId, tab) {
     var urlColorPairs = prefs.urlColorPairs || '';
     var opacity = prefs.opacity || .2;
     var borderWidth = prefs.borderWidth || '15px';
-    var split = urlColorPairs.split(/\n|,/);
-    var newObj = {};
-    for ( var i = 0; i < split.length; i+=2) {
-      newObj[split[i]] = split[i+1];
+    var keywordOptionsArray = urlColorPairs.split('\n');
+    var keywordOptionsObj = {};
+    for ( var i = 0; i < keywordOptionsArray.length; i++) {
+      let keywordOptions = keywordOptionsArray[i].split(', ');
+      if (keywordOptions[0]) {
+        keywordOptionsObj[keywordOptions[0]] = keywordOptions;
+      }
     }
 
-    Object.keys(newObj).forEach(function(key) {
+    Object.keys(keywordOptionsObj).forEach(function(key) {
       if (tab.url.match(key)) {
-        log('URL Color Message: Key matches settings - adding divs.')
         chrome.tabs.executeScript(tabId,
           {
             code:`
               var style = document.createElement('style');
               style.type = 'text/css';
-              style.innerHTML = '.urlColorAnimate { animation: blinker 1s linear infinite; } @keyframes blinker { 0% { opacity: ${opacity}; } 50% { opacity: 0; } 100% { opacity: ${opacity}; } }';
+              style.innerHTML = '.urlColorAnimate { animation: blinker ${keywordOptionsObj[key][3] || 1.5}s linear infinite; } @keyframes blinker { 0% { opacity: ${opacity}; } 50% { opacity: 0; } 100% { opacity: ${opacity}; } }';
               document.getElementsByTagName('head')[0].appendChild(style);
               var leftDiv = document.createElement('div');
               var rightDiv = document.createElement('div');
@@ -53,7 +47,7 @@ var addDivsToPage = function(tabId, tab) {
 
               divs.forEach(function(div, index) {
                 div.setAttribute('class', 'colordiv');
-                div.style.background = '${newObj[key]}';
+                div.style.background = '${keywordOptionsObj[key][1]}';
                 div.style.position = 'fixed';
                 div.style.opacity = ${opacity};
                 div.style.zIndex = '99999999999999';
@@ -78,7 +72,9 @@ var addDivsToPage = function(tabId, tab) {
 
               divs.forEach(function(div) {
                 document.body.appendChild(div);
-                div.classList.add('urlColorAnimate');
+                if ('${keywordOptionsObj[key][2]}' === 'flash') {
+                  div.classList.add('urlColorAnimate');
+                }
               });
             `
           }
