@@ -4,7 +4,6 @@
     <title>URL Colors</title>
     <style>
     body {
-      overflow: auto;
       margin: 0px;
       padding: 0px;
       background: white;
@@ -23,6 +22,10 @@
     input {
       width: 25%;
     }
+    .note {
+      margin-top: 2px;
+      font-size: .8rem;
+    }
     </style>
     <script src="popup.js"></script>
   </head>
@@ -30,10 +33,16 @@
     <div class="settings">
       <h3> Settings </h3>
       <div>
+        Active: <input type="checkbox" name="active" checked><br>
+      </div>
+      <div>
         Border Width: <input type="text" name="border-width" placeholder="15px"><br>
       </div>
       <div>
         Opacity: <input type="text" name="opacity" placeholder=".2"><br>
+      </div>
+      <div class="note">
+        Note: use 100vw as border width and a low opacity (.05) for a full screen colored mask
       </div>
     </div>
     <div class="settings">
