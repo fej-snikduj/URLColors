@@ -38,6 +38,10 @@ var addDivsToPage = function(tabId, tab) {
         chrome.tabs.executeScript(tabId,
           {
             code:`
+              var style = document.createElement('style');
+              style.type = 'text/css';
+              style.innerHTML = '.urlColorAnimate { animation: blinker 1s linear infinite; } @keyframes blinker { 0% { opacity: ${opacity}; } 50% { opacity: 0; } 100% { opacity: ${opacity}; } }';
+              document.getElementsByTagName('head')[0].appendChild(style);
               var leftDiv = document.createElement('div');
               var rightDiv = document.createElement('div');
               var topDiv = document.createElement('div');
@@ -74,6 +78,7 @@ var addDivsToPage = function(tabId, tab) {
 
               divs.forEach(function(div) {
                 document.body.appendChild(div);
+                div.classList.add('urlColorAnimate');
               });
             `
           }
@@ -84,6 +89,12 @@ var addDivsToPage = function(tabId, tab) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+  // initialize tabs
+  chrome.tabs.query({}, function(tabArray) {
+    tabArray.forEach((tab) => {
+      addDivsToPage(tab.id, tab);
+    });
+  });
   chrome.tabs.onUpdated.addListener(
     function(tabId, changeInfo, tab) {
       removePreviousDivs(tabId);
