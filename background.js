@@ -16,8 +16,6 @@ var addDivsToPage = function(tabId, tab) {
   var prefs = JSON.parse(window.localStorage.getItem('urlColorPrefs'));
   if (tab.url && prefs.active){
     var urlColorPairs = prefs.urlColorPairs || '';
-    var opacity = prefs.opacity || .2;
-    var borderWidth = prefs.borderWidth || '15px';
     var keywordOptionsArray = urlColorPairs.split('\n');
     var keywordOptionsObj = {};
     for ( var i = 0; i < keywordOptionsArray.length; i++) {
@@ -28,13 +26,16 @@ var addDivsToPage = function(tabId, tab) {
     }
 
     Object.keys(keywordOptionsObj).forEach(function(key) {
+      var opacity = keywordOptionsObj[key][5] || prefs.opacity || 1;
+      var borderWidth = keywordOptionsObj[key][4] || prefs.borderWidth || '15px';
+      var timer = keywordOptionsObj[key][3] || 2;
       if (tab.url.match(key)) {
         chrome.tabs.executeScript(tabId,
           {
             code:`
               var style = document.createElement('style');
               style.type = 'text/css';
-              style.innerHTML = '.urlColorAnimate { animation: blinker ${keywordOptionsObj[key][3] || 1.5}s linear infinite; } @keyframes blinker { 0% { opacity: ${opacity}; } 50% { opacity: 0; } 100% { opacity: ${opacity}; } }';
+              style.innerHTML = '.urlColorAnimate { animation: blinker ${timer}s linear infinite; } @keyframes blinker { 0% { opacity: ${opacity}; } 50% { opacity: 0; } 100% { opacity: ${opacity}; } }';
               document.getElementsByTagName('head')[0].appendChild(style);
               var leftDiv = document.createElement('div');
               var rightDiv = document.createElement('div');
