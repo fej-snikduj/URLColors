@@ -51,6 +51,7 @@ var addDivsToPage = function(tabId, tab) {
                 div.style.position = 'fixed';
                 div.style.opacity = ${opacity};
                 div.style.zIndex = '99999999999999';
+                div.style.pointerEvents = 'none';
               });
 
               horizontal.forEach(function(div) {
