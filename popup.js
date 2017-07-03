@@ -27,6 +27,9 @@ document.addEventListener('DOMContentLoaded', function () {
   opacityInput.value = prefs.opacity || .2;
   borderWidthInput.value = prefs.borderWidth || '15px';
   active.checked = typeof(prefs.active) === 'boolean' ? prefs.active : true;
+  if (typeof(prefs.active) !== 'boolean') {
+    urlColors.updateLocalStorage('active', active.checked);
+  }
 
   urlColorPairs.addEventListener('input', function(e) {
     urlColors.updateLocalStorage('urlColorPairs', e.target.value);
