@@ -1,7 +1,7 @@
 {
   "name": "URLColors",
   "short_name": "URLColors",
-  "description": "A chrome extension that adds a colored border around websites that match user inputted preferences.",
+  "description": "A chrome extension that adds a colored border around websites that match user inputted preferences.  Useful for different environments that are visually the same.",
   "version": "1.0",
   "permissions": [
     "tabs", "http://*/*", "https://*/*"
