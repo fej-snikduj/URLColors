@@ -4,7 +4,7 @@
   "description": "A chrome extension that adds a colored border around websites that match user inputted preferences.",
   "version": "1.0.2",
   "permissions": [
-    "tabs", "http://*/*", "https://*/*"
+    "activeTab"
   ],
   "background": {
     "scripts": ["background.js"]

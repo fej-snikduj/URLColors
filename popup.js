@@ -9,6 +9,7 @@ urlColors.updateLocalStorage = function(property, value) {
 urlColors.updateTabs = function() {
   chrome.tabs.query({}, function(tabArray) {
     tabArray.forEach((tab) => {
+      console.log(tab, 'tab')
       chrome.extension.getBackgroundPage().removePreviousDivs(tab.id);
       chrome.extension.getBackgroundPage().addDivsToPage(tab.id, tab);
     });
