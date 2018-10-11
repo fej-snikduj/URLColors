@@ -1,3 +1,44 @@
+var snoozeTimeout;
+
+var getValue = function(property) {
+  let storage = JSON.parse(localStorage.getItem('urlColorPrefs') || "{}");
+  return storage[property];
+};
+
+var updateLocalStorage = function(property, value) {
+  let storage = JSON.parse(localStorage.getItem('urlColorPrefs') || "{}");
+  storage[property] = value;
+  localStorage.setItem('urlColorPrefs', JSON.stringify(storage));
+};
+
+var resetSnooze = function() {
+  // Update state
+  let storage = JSON.parse(localStorage.getItem('urlColorPrefs') || "{}");
+  delete storage['expirationTimeUnix'];
+  delete storage['expirationTimeStamp'];
+  delete storage['expirationTimeString'];
+  localStorage.setItem('urlColorPrefs', JSON.stringify(storage));
+  // update UI
+  var views = chrome.extension.getViews({
+    type: "popup"
+  });
+  for (var i = 0; i < views.length; i++) {
+    var snoozeButton = views[i].document.querySelector('button[id="snooze"]');
+    var cancelButton = views[i].document.querySelector('button[id="cancel"]');
+    var expirationTimeDiv = views[i].document.querySelector('div[id="expiration-time"]');
+    snoozeButton.disabled = false;
+    cancelButton.disabled = true;
+    expirationTimeDiv.textContent = '';
+  }
+}
+
+var handleSnooze = function() {
+  var minutes = getValue('snoozeTime');
+  snoozeTimeout = setTimeout(function() {
+    resetSnooze();
+    updateTabs();
+  }, 60000*minutes);
+}
 
 var removePreviousDivs = function(tabId) {
   chrome.tabs.executeScript(tabId, {
@@ -10,9 +51,20 @@ var removePreviousDivs = function(tabId) {
       });
     `
   });
-}
+};
 
 var addDivsToPage = function(tabId, tab) {
+  const expirationTimeUnix = getValue('expirationTimeUnix');
+  const snoozed = expirationTimeUnix && expirationTimeUnix > Date.now();
+  if (snoozed) {
+    return;
+  }
+  if (expirationTimeUnix && expirationTimeUnix < Date.now()) {
+    // somehow state wasn't cleared yet.
+    resetSnooze();
+    updateTabs();
+    return;
+  }
   var prefs = JSON.parse(window.localStorage.getItem('urlColorPrefs'));
   if (tab.url && prefs.active){
     var urlColorPairs = prefs.urlColorPairs || '';
@@ -87,6 +139,19 @@ var addDivsToPage = function(tabId, tab) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+  // update snooze settings
+  var expirationTime = getValue('expirationTimeUnix');
+  var diffInTime = expirationTime - Date.now();
+  if (expirationTime && diffInTime > 0) {
+    snoozeTimeout = setTimeout(function() {
+      resetSnooze();
+      updateTabs();
+    }, diffInTime);
+  }
+  if (expirationTime && diffInTime < 0) {
+    resetSnooze();
+    updateTabs();
+  }
   // initialize tabs
   chrome.tabs.query({}, function(tabArray) {
     tabArray.forEach((tab) => {
@@ -100,3 +165,28 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   );
 });
+
+var removePreviousDivsFromAllTabs = function() {
+  chrome.tabs.query({}, function(tabArray) {
+    tabArray.forEach((tab) => {
+      removePreviousDivs(tab.id);
+    });
+  });
+}
+
+var addDivsToPageForAllTabs = function() {
+  chrome.tabs.query({}, function(tabArray) {
+    tabArray.forEach((tab) => {
+      addDivsToPage(tab.id, tab);
+    });
+  });
+}
+
+var updateTabs = function() {
+  chrome.tabs.query({}, function(tabArray) {
+    tabArray.forEach((tab) => {
+      removePreviousDivs(tab.id);
+      addDivsToPage(tab.id, tab);
+    });
+  });
+};

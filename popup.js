@@ -1,40 +1,4 @@
-window.urlColors = window.urlColors || {};
 
-urlColors.updateLocalStorage = function(property, value) {
-  let storage = JSON.parse(localStorage.getItem('urlColorPrefs') || "{}");
-  storage[property] = value;
-  localStorage.setItem('urlColorPrefs', JSON.stringify(storage));
-};
-
-urlColors.getValue = function(property) {
-  let storage = JSON.parse(localStorage.getItem('urlColorPrefs') || "{}");
-  return storage[property];
-};
-
-urlColors.updateTabs = function() {
-  chrome.tabs.query({}, function(tabArray) {
-    tabArray.forEach((tab) => {
-      chrome.extension.getBackgroundPage().removePreviousDivs(tab.id);
-      chrome.extension.getBackgroundPage().addDivsToPage(tab.id, tab);
-    });
-  });
-}
-
-urlColors.removePreviousDivs = function() {
-  chrome.tabs.query({}, function(tabArray) {
-    tabArray.forEach((tab) => {
-      chrome.extension.getBackgroundPage().removePreviousDivs(tab.id);
-    });
-  });
-}
-
-urlColors.addDivsToPage = function() {
-  chrome.tabs.query({}, function(tabArray) {
-    tabArray.forEach((tab) => {
-      chrome.extension.getBackgroundPage().addDivsToPage(tab.id, tab);
-    });
-  });
-}
 
 document.addEventListener('DOMContentLoaded', function () {
   var localStorage = window.localStorage;
@@ -59,69 +23,78 @@ document.addEventListener('DOMContentLoaded', function () {
   var expirationTime = prefs.expirationTimeString || '';
 
   // Now initialize state with default or previous values.
-  urlColors.updateLocalStorage('active', isActive);
-  urlColors.updateLocalStorage('urlColorPairs', urlColorPairs);
-  urlColors.updateLocalStorage('opacity', opacity);
-  urlColors.updateLocalStorage('borderWidth', borderWidth);
-  urlColors.updateLocalStorage('snoozeTime', snoozeTime);
+  chrome.extension.getBackgroundPage().updateLocalStorage('active', isActive);
+  chrome.extension.getBackgroundPage().updateLocalStorage('urlColorPairs', urlColorPairs);
+  chrome.extension.getBackgroundPage().updateLocalStorage('opacity', opacity);
+  chrome.extension.getBackgroundPage().updateLocalStorage('borderWidth', borderWidth);
+  chrome.extension.getBackgroundPage().updateLocalStorage('snoozeTime', snoozeTime);
 
 
   // Update the input values with initial state.
-  urlColorPairs.value = urlColorPairs;
+  urlColorPairsInput.value = urlColorPairs;
   opacityInput.value = opacity;
   borderWidthInput.value = borderWidth;
   activeCheckbox.checked = isActive;
   snoozeTimeInput.value = snoozeTime;
-  expirationTimeDiv.textContent = `Snoozed until: ${expirationTime}`;
-  // snoozeButton.disabled = !!expirationTime;
+  expirationTimeDiv.textContent = expirationTime ? `Snoozed until: ${expirationTime}` : '';
+  snoozeButton.disabled = !!expirationTime;
   cancelButton.disabled = !expirationTime;
 
   urlColorPairsInput.addEventListener('input', function(e) {
-    urlColors.updateLocalStorage('urlColorPairs', e.target.value);
-    urlColors.updateTabs();
+    chrome.extension.getBackgroundPage().updateLocalStorage('urlColorPairs', e.target.value);
+    chrome.extension.getBackgroundPage().updateTabs();
   }, false);
 
   snoozeTimeInput.addEventListener('input', function(e) {
-    urlColors.updateLocalStorage('snoozeTime', e.target.value);
-    urlColors.updateTabs();
+    chrome.extension.getBackgroundPage().updateLocalStorage('snoozeTime', e.target.value);
+    chrome.extension.getBackgroundPage().updateTabs();
   }, false);
 
   opacityInput.addEventListener('input', function(e) {
-    urlColors.updateLocalStorage('opacity', e.target.value);
-    urlColors.updateTabs();
+    chrome.extension.getBackgroundPage().updateLocalStorage('opacity', e.target.value);
+    chrome.extension.getBackgroundPage().updateTabs();
   }, false);
 
   borderWidthInput.addEventListener('input', function(e) {
-    urlColors.updateLocalStorage('borderWidth', e.target.value);
-    urlColors.updateTabs();
+    chrome.extension.getBackgroundPage().updateLocalStorage('borderWidth', e.target.value);
+    chrome.extension.getBackgroundPage().updateTabs();
   }, false);
 
   snoozeButton.addEventListener('click', function(e) {
     // Get the minutes to snooze from the current value of the input.
-    var snoozeMinutes = urlColors.getValue('snoozeTime');
+    var snoozeMinutes = chrome.extension.getBackgroundPage().getValue('snoozeTime');
     var expirationTimeUnix = Date.now() + snoozeMinutes * 60000;
     var expirationTimeStamp = new Date(expirationTimeUnix);
     var localeString = expirationTimeStamp.toLocaleString();
     // Update State
-    urlColors.updateLocalStorage('expirationTimeUnix', expirationTimeUnix);
-    urlColors.updateLocalStorage('expirationTimeStamp', expirationTimeStamp);
-    urlColors.updateLocalStorage('expirationTimeString', localeString);
+    chrome.extension.getBackgroundPage().updateLocalStorage('expirationTimeUnix', expirationTimeUnix);
+    chrome.extension.getBackgroundPage().updateLocalStorage('expirationTimeStamp', expirationTimeStamp);
+    chrome.extension.getBackgroundPage().updateLocalStorage('expirationTimeString', localeString);
     expirationTimeDiv.textContent = 'Snoozed until: ' + localeString;
     // Update UI
     snoozeButton.disabled = true;
     cancelButton.disabled = false;
-    window.snoozeTimeout = setTimeout(function() {
-      alert('what')
-    }, 1000)
-    urlColors.updateTabs();
+    chrome.extension.getBackgroundPage().handleSnooze();
+    chrome.extension.getBackgroundPage().updateTabs();
+  }, false);
+
+  cancelButton.addEventListener('click', function(e) {
+    // Update State
+    chrome.extension.getBackgroundPage().resetSnooze();
+    // Update UI
+    expirationTimeDiv.textContent = '';
+    snoozeButton.disabled = false;
+    cancelButton.disabled = true;
+    clearTimeout(chrome.extension.getBackgroundPage().snoozeTimeout);
+    chrome.extension.getBackgroundPage().updateTabs();
   }, false);
 
   activeCheckbox.addEventListener('change', function(e) {
-    urlColors.updateLocalStorage('active', e.target.checked);
+    chrome.extension.getBackgroundPage().updateLocalStorage('active', e.target.checked);
     if (!e.target.checked) {
-      urlColors.removePreviousDivs();
+      chrome.extension.getBackgroundPage().removePreviousDivsFromAllTabs();
     } else {
-      urlColors.addDivsToPage();
+      chrome.extension.getBackgroundPage().addDivsToPageForAllTabs();
     }
   }, false);
 
