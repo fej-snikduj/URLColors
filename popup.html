@@ -27,11 +27,23 @@
       margin-bottom: 5px;
       font-size: .8rem;
     }
+    #expiration-time {
+      color: red;
+      margin-top: 5px;
+    }
     </style>
     <script src="popup.js"></script>
   </head>
   <body>
     <div class="settings">
+      <h3> Snooze </h3>
+      <div>
+        Snooze for: <input type="number" name="snooze-time" checked> minutes.
+        <button id="snooze"> Snooze </button>
+        <button id="cancel" disabled> Cancel </button>
+        <div id="expiration-time"></div>
+        <br>
+      </div>
       <h3> Settings </h3>
       <div>
         Active: <input type="checkbox" name="active" checked><br>
