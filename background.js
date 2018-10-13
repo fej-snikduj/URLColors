@@ -65,7 +65,7 @@ var addDivsToPage = function(tabId, tab) {
     updateTabs();
     return;
   }
-  var prefs = JSON.parse(window.localStorage.getItem('urlColorPrefs'));
+  var prefs = JSON.parse(window.localStorage.getItem('urlColorPrefs')) || {};
   if (tab.url && prefs.active){
     var urlColorPairs = prefs.urlColorPairs || '';
     var keywordOptionsArray = urlColorPairs.split('\n');
