@@ -130,7 +130,8 @@ var addDivsToPage = function(tabId, tab) {
                   div.classList.add('urlColorAnimate');
                 }
               });
-            `
+            `,
+            allFrames:true
           }
         );
       }
