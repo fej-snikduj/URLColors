@@ -17,9 +17,9 @@
     }
     textArea {
       height: 350px;
-      width: 50%;
+      width: 95%;
     }
-    input {
+    input[type=text] {
       width: 25%;
     }
     .note {
@@ -30,6 +30,10 @@
     #expiration-time {
       color: red;
       margin-top: 5px;
+    }
+    .settings label {
+        width: 160px;
+        display: inline-block;
     }
     </style>
     <script src="popup.js"></script>
@@ -46,27 +50,37 @@
       </div>
       <h3> Settings </h3>
       <div>
-        Active: <input type="checkbox" name="active" checked><br>
+        <label for="active">Active:</label>
+        <input type="checkbox" id="active" name="active" checked><br>
       </div>
       <div>
-        Default Border Width: <input type="text" name="border-width" placeholder="15px"><br>
+        <label for="border-width">Default Border Width:</label>
+        <input type="text" id="border-width" name="border-width" placeholder="15px"><br>
       </div>
       <div>
-        Default Opacity: <input type="text" name="opacity" placeholder=".2"><br>
+        <label for="opacity">Default Opacity:</label>
+        <input type="text" id="opacity" name="opacity" placeholder=".2"><br>
       </div>
       <div class="note">
         Note: use 100vw as border width and a low opacity (.05) for a full screen colored mask <br>
         You can overried these default settings for individual keyword matches below.
       </div>
+    <div>
+        <label for="opacity">Default 'all frames':</label>
+        <input type="checkbox" id="applyInAllFrames" name="applyInAllFrames"><br>
+    </div>
+    <div class="note">
+        Note: Check or uncheck this option to show or not the border in all frames within the page.
+    </div>
     </div>
     <div class="settings">
       <h3> Url Keyword Options </h3>
       <div class="note">
         Note: Each set of keyword options is on a new line with the format for each being: <br>
-         <strong>keyword, color, [flash], [timer], [border width], [opacity] </strong><br>
-         Where keyword and color are required.  If you type in 'flash' as the third word, then the box will blink at <thead>
-        interval set by the optional parameter 'timer'.  You can also specify custom border width and opacity values
-        that will override the default values above.
+        <strong>keyword, color, [flash], [timer], [border width], [opacity], [all frames] </strong><br>
+        Where keyword and color are required. If you type in 'flash' as the third word, then the box will blink at <thead>
+        interval set by the optional parameter 'timer'. You can also specify custom border width, opacity and 
+        'all frames (true/false)' values that will override the default values above.
       </div>
 
       <div>
@@ -74,7 +88,7 @@
           placeholder=
 "google.com, blue
 facebook.com, green, flash, 4
-anythinghere, pink"
+anythinghere, pink, flash, 4, , 0.5, true"
         ></textarea>
       </div>
     </div>

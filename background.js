@@ -81,6 +81,12 @@ var addDivsToPage = function(tabId, tab) {
       var opacity = keywordOptionsObj[key][5] || prefs.opacity || 1;
       var borderWidth = keywordOptionsObj[key][4] || prefs.borderWidth || '15px';
       var timer = keywordOptionsObj[key][3] || 2;
+
+      var applyInAllFrames = prefs.applyInAllFrames || false;
+      if(keywordOptionsObj[key][6] === 'true' || keywordOptionsObj[key][6] === 'false'){
+        applyInAllFrames = keywordOptionsObj[key][6] === 'true';
+      }
+
       if (tab.url.match(key)) {
         chrome.tabs.executeScript(tabId,
           {
@@ -130,7 +136,8 @@ var addDivsToPage = function(tabId, tab) {
                   div.classList.add('urlColorAnimate');
                 }
               });
-            `
+            `,
+            allFrames:applyInAllFrames
           }
         );
       }

@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var snoozeButton = document.querySelector('button[id="snooze"]');
   var cancelButton = document.querySelector('button[id="cancel"]');
   var expirationTimeDiv = document.querySelector('div[id="expiration-time"]');
+  var applyInAllFramesCheckbox = document.querySelector('input[name="applyInAllFrames"]');
 
   // use localStorage for the application 'state'.
 
@@ -21,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var isActive = typeof(prefs.active) === 'boolean' ? prefs.active : activeCheckbox.checked;
   var snoozeTime = prefs.snoozeTime || 5;
   var expirationTime = prefs.expirationTimeString || '';
+  var applyInAllFrames = typeof(prefs.applyInAllFrames) === 'boolean' ? prefs.applyInAllFrames : applyInAllFramesCheckbox.checked;
 
   // Now initialize state with default or previous values.
   chrome.extension.getBackgroundPage().updateLocalStorage('active', isActive);
@@ -28,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
   chrome.extension.getBackgroundPage().updateLocalStorage('opacity', opacity);
   chrome.extension.getBackgroundPage().updateLocalStorage('borderWidth', borderWidth);
   chrome.extension.getBackgroundPage().updateLocalStorage('snoozeTime', snoozeTime);
-
+  chrome.extension.getBackgroundPage().updateLocalStorage('applyInAllFrames', applyInAllFrames);
 
   // Update the input values with initial state.
   urlColorPairsInput.value = urlColorPairs;
@@ -39,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
   expirationTimeDiv.textContent = expirationTime ? `Snoozed until: ${expirationTime}` : '';
   snoozeButton.disabled = !!expirationTime;
   cancelButton.disabled = !expirationTime;
+  applyInAllFramesCheckbox.checked = applyInAllFrames;
 
   urlColorPairsInput.addEventListener('input', function(e) {
     chrome.extension.getBackgroundPage().updateLocalStorage('urlColorPairs', e.target.value);
@@ -98,4 +101,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }, false);
 
+  applyInAllFramesCheckbox.addEventListener('change', function(e) {
+      chrome.extension.getBackgroundPage().updateLocalStorage('applyInAllFrames', e.target.checked);
+      chrome.extension.getBackgroundPage().updateTabs();
+  }, false);
+  
 });
