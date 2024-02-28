@@ -32,7 +32,7 @@ const addNewDivs = (color, flash, timer, borderWidth, opacity) => {
   horizontal.forEach((div) => {
     div.style.left = '0';
     div.style.right = '0';
-    div.style.height = '${borderWidth}';
+    div.style.height = borderWidth;
   });
 
   vertical.forEach((div) => {
@@ -54,6 +54,23 @@ const addNewDivs = (color, flash, timer, borderWidth, opacity) => {
   });
 }
 
+const getMatchedPrefs = (prefs) => {
+  const currentUrl = window.location.href;
+  const matchedPrefs = [];
+
+  prefs.keywords.split('\n').forEach(line => {
+    // Parse the line for keyword and settings
+    const [keyword, color, flash, timer, borderWidth = prefs?.borderWidth, opacity = prefs?.opacity] = line.split(',').map(s => s.trim());
+    const regex = new RegExp(keyword.replace(/\*/g, '.*'), 'i'); // Convert wildcard to regex pattern
+
+    // If the current URL matches the keyword pattern
+    if (regex.test(currentUrl)) {
+      matchedPrefs.push({keyword, color, flash, timer, borderWidth, opacity});
+    }
+  });
+  return matchedPrefs;
+}
+
 
 function updatePageWithPrefs(prefs) {
   // Get the current tab URL
@@ -67,7 +84,7 @@ function updatePageWithPrefs(prefs) {
 
     // If the current URL matches the keyword pattern
     if (regex.test(currentUrl)) {
-      console.log(`Match found for ${keyword} in URL: ${currentUrl}`);
+      console.log(`URLColors: Match found for ${keyword} in URL: ${currentUrl}`);
       removePreviousDivs();
       addNewDivs(color, flash, timer, borderWidth, opacity);
     }
@@ -76,24 +93,36 @@ function updatePageWithPrefs(prefs) {
 
 function applyPreferences() {
   chrome.storage.local.get(['prefs', 'snoozeUntil', 'active'], function(data) {
-    if (data.active === false) {
-      console.log("Extension is inactive.");
+    if (data.active === false || !data.prefs) {
+      console.log("URLColors: Extension is not active.");
       removePreviousDivs();
       return;
     }
     const now = Date.now();
     if (data.snoozeUntil && data.snoozeUntil > now) {
-      console.log("Extension is snoozed.");
+      console.log("URLColors: Extension is snoozed.");
       removePreviousDivs();
       return;
     }
+    const matchedPrefs = getMatchedPrefs(data.prefs);
+    if (matchedPrefs.length === 0) {
+        removePreviousDivs();
+        return;
+    }
+    console.log(`URLColors: ${matchedPrefs.length} match(s) found for URL: ${window.location.href}. Updating page with border preferences.`, matchedPrefs);
     updatePageWithPrefs(data.prefs);
   });
 }
-
-chrome.runtime.onMessage.addListener((message) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "ping") {
+    console.log('Content script received ping message from background script.')
+    // Respond to indicate the script is present
+    sendResponse({status: "present"});
+  }
   if (message.action === 'updateTab') {
+    console.log('Content script received updateTab message from background script.')
     applyPreferences();
+    sendResponse('updated tab')
   }
 });
 

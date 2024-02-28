@@ -17,7 +17,7 @@
     }
     textArea {
       height: 350px;
-      width: 50%;
+      width: 90%;
     }
     input {
       width: 25%;
@@ -31,10 +31,30 @@
       color: red;
       margin-top: 5px;
     }
+    .banner {
+      background-color: #f9ed69; /* Light yellow background */
+      color: black;
+      padding: 10px;
+      position: relative;
+      display: none; /* Initially hidden */
+    }
+
+    #dismissBanner {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+    }
     </style>
-    <script src="popup.js"></script>
+    <script src="urlColorsPopup.js"></script>
   </head>
   <body>
+  <div id="wildcardBanner" class="banner">
+    Wildcards (*) now supported
+    <button id="dismissBanner">X</button>
+  </div>
     <div class="settings">
       <h3> Snooze </h3>
       <div>
@@ -42,7 +62,6 @@
         <button id="snooze"> Snooze </button>
         <button id="cancel" disabled> Cancel </button>
         <div id="expiration-time"></div>
-        <br>
       </div>
       <h3> Settings </h3>
       <div>
@@ -64,12 +83,13 @@
       <div class="note">
         Note: Each set of keyword options is on a new line with the format for each being: <br>
          <strong>keyword, color, [flash], [timer], [border width], [opacity] </strong><br>
-         Where keyword and color are required.  Note, you may use the wildcard character (<strong>*</strong>) !
+         Where keyword and color are required. <br><br> Note, you may use the wildcard character within the keyword (<strong>*</strong>)! <br><br>
         If you type in 'flash' as the third word, then the box will blink at the interval set by the optional parameter 'timer'.
-        You can also specify custom border width and opacity values that will override the default values above.
+        You can also specify custom border width and opacity values that will override the default values above.<br>
       </div>
 
       <div>
+        <br>
         <textarea id="url-settings"
           placeholder=
 "google.com, blue
