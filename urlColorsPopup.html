@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+  <head>
+    <title>URL Colors</title>
+    <style>
+    body {
+      margin: 0px;
+      padding: 0px;
+      background: white;
+      width: 500px;
+      height: 800px;
+      font-size: 1rem;
+    }
+    div {
+      margin: 10px;
+    }
+    .settings {
+      width: 100%;
+      margin: 10px;
+    }
+    textArea {
+      height: 350px;
+      width: 90%;
+    }
+    input {
+      width: 25%;
+    }
+    .note {
+      margin-top: 2px;
+      margin-bottom: 5px;
+      font-size: .8rem;
+    }
+    #expiration-time {
+      color: red;
+      margin-top: 5px;
+    }
+    .banner {
+      background-color: #f9ed69; /* Light yellow background */
+      color: black;
+      padding: 10px;
+      position: relative;
+      display: none; /* Initially hidden */
+    }
+
+    #dismissBanner {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+    }
+    </style>
+    <script src="urlColorsPopup.js"></script>
+  </head>
+  <body>
+  <div id="wildcardBanner" class="banner">
+    Wildcards (*) now supported
+    <button id="dismissBanner">X</button>
+  </div>
+    <div class="settings">
+      <h3> Snooze </h3>
+      <div>
+        Snooze for: <input type="number" name="snooze-duration" id="snooze-duration" checked> minutes.
+        <button id="snooze"> Snooze </button>
+        <button id="cancel" disabled> Cancel </button>
+        <div id="expiration-time"></div>
+      </div>
+      <h3> Settings </h3>
+      <div>
+        Active: <input type="checkbox" name="active" id="active-checkbox" checked><br>
+      </div>
+      <div>
+        Console Logging: <input type="checkbox" name="active" id="logging-checkbox"><br> (for debugging your configuration)
+
+      </div>
+      <div>
+        Default Border Width: <input type="text" name="border-width" id="border-width" placeholder="15px"><br>
+      </div>
+      <div>
+        Default Opacity: <input type="text" name="opacity" id="opacity" placeholder=".2"><br>
+      </div>
+      <div class="note">
+        Note: use 100vw as border width and a low opacity (.05) for a full screen colored mask <br>
+        You can override these default settings for individual keyword matches below.
+      </div>
+    </div>
+    <div class="settings">
+      <h3> Url Keyword Options </h3>
+      <div class="note">
+        Note: Each set of keyword options is on a new line with the format for each being: <br>
+         <strong>keyword, color, [flash], [timer], [border width], [opacity] </strong><br>
+         Where keyword and color are required. <br><br> Note, you may use the wildcard character within the keyword (<strong>*</strong>)! <br><br>
+        If you type in 'flash' as the third word, then the box will blink at the interval set by the optional parameter 'timer'.
+        You can also specify custom border width and opacity values that will override the default values above.<br>
+      </div>
+
+      <div>
+        <br>
+        <textarea id="url-settings"
+          placeholder=
+"google.com, blue
+facebook.com, green, flash, 4
+www.*.mywildcard.com, pink"
+        ></textarea>
+      </div>
+    </div>
+  </body>
+</html>

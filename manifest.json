@@ -2,17 +2,30 @@
   "name": "URLColors",
   "short_name": "URLColors",
   "description": "A chrome extension that adds a colored border around websites that match user inputted preferences.",
-  "version": "1.1.2",
+  "version": "2",
+  "manifest_version": 3,
+  "host_permissions": ["https://*/*"],
   "permissions": [
-    "tabs", "http://*/*", "https://*/*"
+    "storage",
+    "tabs",
+    "activeTab",
+    "scripting"
   ],
   "background": {
-    "scripts": ["background.js"]
+    "service_worker": "urlColorsServiceWorker.js"
   },
-  "browser_action": {
-      "default_title": "URLColors",
-      "default_icon": "icon.png",
-      "default_popup": "popup.html"
+  "action": {
+    "default_popup": "urlColorsPopup.html",
+    "default_icon": "urlColorsIcon.png"
   },
-  "manifest_version": 2
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["urlColorsContentScript.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "48": "urlColorsIcon.png"
+  }
 }
