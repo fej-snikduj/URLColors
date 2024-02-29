@@ -1,5 +1,5 @@
 const logMessageIfEnabled = (...args) => {
-    chrome.storage.local.get(['logging'], function(data) {
+    chrome.storage.local.get(['logging'], (data) => {
         if (data.logging) {
         console.log(...args);
         }
@@ -55,7 +55,7 @@ const addNewDivs = (color, flash, timer, borderWidth, opacity) => {
   topDiv.style.top = '0';
   bottomDiv.style.bottom = '0';
 
-  divs.forEach(function(div) {
+  divs.forEach((div) => {
     document.body.appendChild(div);
     if (flash === 'flash') {
       div.classList.add('urlColorAnimate');
@@ -81,7 +81,7 @@ const getMatchedPrefs = (prefs) => {
 }
 
 
-function updatePageWithPrefs(prefs) {
+const updatePageWithPrefs = (prefs) => {
   // Get the current tab URL
   const currentUrl = window.location.href;
 
@@ -99,8 +99,8 @@ function updatePageWithPrefs(prefs) {
   });
 }
 
-function applyPreferences() {
-  chrome.storage.local.get(['prefs', 'snoozeUntil', 'active'], function(data) {
+const applyPreferences = () => {
+  chrome.storage.local.get(['prefs', 'snoozeUntil', 'active'], (data) => {
     if (data.active === false || !data.prefs) {
       logMessageIfEnabled("URLColors: Extension is not active.");
       removePreviousDivs();

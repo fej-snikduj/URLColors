@@ -1,4 +1,9 @@
-document.addEventListener('DOMContentLoaded', function() {
+const DEFAULT_OPACITY = '0.5';
+const DEFAULT_BORDER_WIDTH = '15px';
+const MILLISECONDS_PER_MINUTE = 60000;
+const DEFAULT_SNOOZE_TIME = 5;
+
+document.addEventListener('DOMContentLoaded', () => {
   // Define elements
   const keywordsInput = document.getElementById('url-settings');
   const opacityInput = document.getElementById('opacity');
@@ -14,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const resetSnoozeUIIfExpired = (snoozeUntil) => {
     if (!snoozeUntil || (snoozeUntil && snoozeUntil < Date.now())) {
-      chrome.storage.local.set({snoozeUntil: ''}, function() {
+      chrome.storage.local.set({snoozeUntil: ''}, () => {
         console.log('Snooze expired.');
       });
       snoozeButton.disabled = false;
@@ -29,14 +34,14 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Load and display stored preferences including snooze time
-  chrome.storage.local.get(['prefs', 'snoozeUntil', 'snoozeTime', 'active', 'bannerDismissed', 'logging'], function(data) {
+  chrome.storage.local.get(['prefs', 'snoozeUntil', 'snoozeTime', 'active', 'bannerDismissed', 'logging'], (data) => {
     // Load preferences
     keywordsInput.value = data?.prefs?.keywords || '';
-    opacityInput.value = data?.prefs?.opacity || '0.5'; // Default opacity
-    borderWidthInput.value = data?.prefs?.borderWidth || '15px'; // Default border width
+    opacityInput.value = data?.prefs?.opacity || DEFAULT_OPACITY; // Default opacity
+    borderWidthInput.value = data?.prefs?.borderWidth || DEFAULT_BORDER_WIDTH; // Default border width
     activeCheckbox.checked = data?.active === undefined ? true: data.active; // Enabled by default
     loggingCheckbox.checked = data?.logging === undefined ? false: data.logging; // Enabled by default
-    snoozeDurationInput.value = data?.snoozeTime || 5;
+    snoozeDurationInput.value = data?.snoozeTime || DEFAULT_SNOOZE_TIME;
     resetSnoozeUIIfExpired(data?.snoozeUntil);
     if (data?.bannerDismissed === undefined) {
       banner.style.display = 'block';
@@ -44,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Save preferences function
-  function savePreferences() {
+   const savePreferences = () => {
     chrome.storage.local.set({
       prefs: {
         keywords: keywordsInput.value,
@@ -52,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
         borderWidth: borderWidthInput.value,
       },
       active: activeCheckbox.checked,
-      snoozeTime: parseFloat(snoozeDurationInput.value) || 5,
+      snoozeTime: parseFloat(snoozeDurationInput.value) || DEFAULT_SNOOZE_TIME,
       logging: loggingCheckbox.checked,// Save snooze time, defaulting to 5 if not specified
     }, () => { console.log('Preferences saved.'); });
   }
@@ -63,13 +68,13 @@ document.addEventListener('DOMContentLoaded', function() {
   borderWidthInput.addEventListener('input', savePreferences);
   activeCheckbox.addEventListener('change', savePreferences);
   loggingCheckbox.addEventListener('change', savePreferences);
-  snoozeDurationInput.addEventListener('input', savePreferences); // Update snooze time in storage on change
+  snoozeDurationInput.addEventListener('input', savePreferences);
 
   // Snooze functionality
-  snoozeButton.addEventListener('click', function() {
-    const snoozeMinutes = parseFloat(snoozeDurationInput.value) || 5; // Use current value or default to 5 minutes
-    const snoozeUntil = Date.now() + snoozeMinutes * 60000; // Calculate snooze end time
-    chrome.storage.local.set({snoozeUntil}, function() {
+  snoozeButton.addEventListener('click', () => {
+    const snoozeMinutes = parseFloat(snoozeDurationInput.value) || DEFAULT_SNOOZE_TIME;
+    const snoozeUntil = Date.now() + snoozeMinutes * MILLISECONDS_PER_MINUTE;
+    chrome.storage.local.set({snoozeUntil}, () => {
       console.log(`Extension snoozed for ${snoozeMinutes} minutes.`);
     });
     snoozeButton.disabled = true;
@@ -77,18 +82,18 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Cancel Snooze
-  cancelButton.addEventListener('click', function() {
+  cancelButton.addEventListener('click', () => {
     const snoozeUntil =''; // Calculate snooze end time
-    chrome.storage.local.set({snoozeUntil}, function() {
+    chrome.storage.local.set({snoozeUntil}, () => {
       console.log(`Snooze canceled.`);
     });
     snoozeButton.disabled = false;
     cancelButton.disabled = true;
   });
 
-  dismissBtn.addEventListener('click', function() {
+  dismissBtn.addEventListener('click', () => {
     banner.style.display = 'none'; // Hide the banner
-    chrome.storage.local.set({bannerDismissed: true}, function() {
+    chrome.storage.local.set({bannerDismissed: true}, () => {
       console.log(`Banner dismissed.`);
     });
   });

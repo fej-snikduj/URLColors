@@ -1,7 +1,7 @@
 let snoozeTimeout;
 
-const updateValue = function(property, value) {
-  chrome.storage.local.set({[property]: value}, function() {
+const updateValue = (property, value) => {
+  chrome.storage.local.set({[property]: value}, () => {
     console.log(`Updated ${property} to: `, value);
   });
 };
@@ -10,7 +10,7 @@ const handleSnooze = (snoozeTime) => {
   clearTimeout(snoozeTimeout);
   const diffInTime = snoozeTime - Date.now();
   if (diffInTime > 0) {
-    snoozeTimeout = setTimeout(function() {
+    snoozeTimeout = setTimeout(() => {
       updateValue('snoozeUntil', '');
       sendUpdateMessageToAllTabs('handleSnooze timeout expired');
     }, diffInTime);
@@ -38,7 +38,7 @@ const injectContentScript = (tabId, callback)=> {
 }
 
 const injectContentScriptOnAllTabs = () => {
-    chrome.tabs.query({}, function(tabs) {
+    chrome.tabs.query({}, (tabs) => {
         tabs.forEach((tab) => {
             if (tab.url.startsWith('http://') || tab.url.startsWith('https://')) {
                 injectContentScript(tab.id);
@@ -73,7 +73,7 @@ const attemptToSendMessage = (tabId) => {
 
 const sendUpdateMessageToAllTabs = (originator) => {
     console.log('sendUpdateMessageToAllTabs called with originator:', originator);
-    chrome.tabs.query({}, function(tabs) {
+    chrome.tabs.query({}, (tabs) => {
         console.log('tabs', tabs);
         tabs.forEach((tab) => {
             attemptToSendMessage(tab.id);
@@ -84,7 +84,7 @@ const sendUpdateMessageToAllTabs = (originator) => {
 chrome.runtime.onStartup.addListener(() => {
     injectContentScriptOnAllTabs();
     // On startup, if snooze is still active, set a timeout to clear it when it expires.
-  chrome.storage.local.get(['snoozeUntil'], function(result) {
+  chrome.storage.local.get(['snoozeUntil'], (result) => {
     if (result.snoozeUntil) {
       handleSnooze(result.snoozeUntil);
     }
