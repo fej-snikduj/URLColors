@@ -1,3 +1,12 @@
+const logMessageIfEnabled = (...args) => {
+    chrome.storage.local.get(['logging'], function(data) {
+        if (data.logging) {
+        console.log(...args);
+        }
+    });
+}
+
+
 const removePreviousDivs = () => {
   const divs = document.getElementsByClassName('colordiv');
   Object.keys(divs).forEach(() => {
@@ -84,7 +93,6 @@ function updatePageWithPrefs(prefs) {
 
     // If the current URL matches the keyword pattern
     if (regex.test(currentUrl)) {
-      console.log(`URLColors: Match found for ${keyword} in URL: ${currentUrl}`);
       removePreviousDivs();
       addNewDivs(color, flash, timer, borderWidth, opacity);
     }
@@ -94,33 +102,32 @@ function updatePageWithPrefs(prefs) {
 function applyPreferences() {
   chrome.storage.local.get(['prefs', 'snoozeUntil', 'active'], function(data) {
     if (data.active === false || !data.prefs) {
-      console.log("URLColors: Extension is not active.");
+      logMessageIfEnabled("URLColors: Extension is not active.");
       removePreviousDivs();
       return;
     }
     const now = Date.now();
     if (data.snoozeUntil && data.snoozeUntil > now) {
-      console.log("URLColors: Extension is snoozed.");
+      logMessageIfEnabled("URLColors: Extension is snoozed.");
       removePreviousDivs();
       return;
     }
     const matchedPrefs = getMatchedPrefs(data.prefs);
     if (matchedPrefs.length === 0) {
+      logMessageIfEnabled(`URLColors: No match found for URL: ${window.location.href}.`, data.prefs);
         removePreviousDivs();
         return;
     }
-    console.log(`URLColors: ${matchedPrefs.length} match(s) found for URL: ${window.location.href}. Updating page with border preferences.`, matchedPrefs);
+    logMessageIfEnabled(`URLColors: ${matchedPrefs.length} match(s) found for URL: ${window.location.href}. Updating page with border preferences.`, matchedPrefs);
     updatePageWithPrefs(data.prefs);
   });
 }
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "ping") {
-    console.log('Content script received ping message from background script.')
     // Respond to indicate the script is present
     sendResponse({status: "present"});
   }
   if (message.action === 'updateTab') {
-    console.log('Content script received updateTab message from background script.')
     applyPreferences();
     sendResponse('updated tab')
   }

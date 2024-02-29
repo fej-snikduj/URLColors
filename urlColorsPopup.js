@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const opacityInput = document.getElementById('opacity');
   const borderWidthInput = document.getElementById('border-width');
   const activeCheckbox = document.getElementById('active-checkbox');
+  const loggingCheckbox = document.getElementById('logging-checkbox');
   const snoozeButton = document.getElementById('snooze');
   const cancelButton = document.getElementById('cancel');
   const snoozeDurationInput = document.getElementById('snooze-duration');
@@ -28,12 +29,13 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Load and display stored preferences including snooze time
-  chrome.storage.local.get(['prefs', 'snoozeUntil', 'snoozeTime', 'active', 'bannerDismissed'], function(data) {
+  chrome.storage.local.get(['prefs', 'snoozeUntil', 'snoozeTime', 'active', 'bannerDismissed', 'logging'], function(data) {
     // Load preferences
     keywordsInput.value = data?.prefs?.keywords || '';
     opacityInput.value = data?.prefs?.opacity || '0.5'; // Default opacity
     borderWidthInput.value = data?.prefs?.borderWidth || '15px'; // Default border width
     activeCheckbox.checked = data?.active === undefined ? true: data.active; // Enabled by default
+    loggingCheckbox.checked = data?.logging === undefined ? false: data.logging; // Enabled by default
     snoozeDurationInput.value = data?.snoozeTime || 5;
     resetSnoozeUIIfExpired(data?.snoozeUntil);
     if (data?.bannerDismissed === undefined) {
@@ -50,7 +52,8 @@ document.addEventListener('DOMContentLoaded', function() {
         borderWidth: borderWidthInput.value,
       },
       active: activeCheckbox.checked,
-      snoozeTime: parseFloat(snoozeDurationInput.value) || 5 // Save snooze time, defaulting to 5 if not specified
+      snoozeTime: parseFloat(snoozeDurationInput.value) || 5,
+      logging: loggingCheckbox.checked,// Save snooze time, defaulting to 5 if not specified
     }, () => { console.log('Preferences saved.'); });
   }
 
@@ -59,6 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
   opacityInput.addEventListener('input', savePreferences);
   borderWidthInput.addEventListener('input', savePreferences);
   activeCheckbox.addEventListener('change', savePreferences);
+  loggingCheckbox.addEventListener('change', savePreferences);
   snoozeDurationInput.addEventListener('input', savePreferences); // Update snooze time in storage on change
 
   // Snooze functionality

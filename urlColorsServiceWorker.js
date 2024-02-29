@@ -98,7 +98,6 @@ chrome.runtime.onInstalled.addListener(() => {
 chrome.tabs.onUpdated.addListener(
     (tabId, changeInfo, tab) => {
         // Only update if URL has changed and status is complete.
-        if (changeInfo.url) {
           chrome.tabs.sendMessage(tab.id, { action: "updateTab" }, (response) => {
               if (chrome.runtime.lastError) {
                 console.error(chrome.runtime.lastError);
@@ -106,7 +105,6 @@ chrome.tabs.onUpdated.addListener(
                 console.log('Sent message to update tab with id: ', tab.id, ' with response:', response);
               }
           });
-        }
     }
 );
 chrome.storage.onChanged.addListener((changes, namespace) => {
