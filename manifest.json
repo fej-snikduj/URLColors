@@ -8,7 +8,6 @@
   "permissions": [
     "storage",
     "tabs",
-    "activeTab",
     "scripting"
   ],
   "background": {

@@ -81,18 +81,41 @@ const sendUpdateMessageToAllTabs = (originator) => {
     });
 };
 
+
+const setBadge = (text, color, title) => {
+    chrome.action.setBadgeText({text});
+    chrome.action.setBadgeBackgroundColor({color});
+    chrome.action.setTitle({title});
+}
+
+const setNeedUpdateBadge = () => {
+    setBadge('!', 'red', 'Please open the popup to migrate your settings to URLColors V2.');
+}
+
+const setSuccessfulUpdateBadge = () => {
+    setBadge("✅", "green", "Settings have been migrated successfully");
+}
+
+const removeBadge = () => {
+    setBadge('', '', '');
+}
+
 chrome.runtime.onStartup.addListener(() => {
     injectContentScriptOnAllTabs();
     // On startup, if snooze is still active, set a timeout to clear it when it expires.
-  chrome.storage.local.get(['snoozeUntil'], (result) => {
-    if (result.snoozeUntil) {
-      handleSnooze(result.snoozeUntil);
-    }
-  });
+    chrome.storage.local.get(['snoozeUntil'], (result) => {
+        if (result.snoozeUntil) {
+            handleSnooze(result.snoozeUntil);
+        }
+    });
 });
 
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener((details) => {
     injectContentScriptOnAllTabs();
+    if (details.reason === "update" && details.previousVersion === "1.1.2") {
+        // Notify the user to open the popup for completing the migration
+        setNeedUpdateBadge();
+    }
 });
 
 chrome.tabs.onUpdated.addListener(
@@ -114,4 +137,15 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
     }
     sendUpdateMessageToAllTabs('storage.onChanged listener');
   }
+});
+
+
+// Message receiving
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "settingsMigrated") {
+        setSuccessfulUpdateBadge();
+    }
+    if (message.action === 'removeBadge') {
+       removeBadge();
+    }
 });
