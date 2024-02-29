@@ -3,7 +3,49 @@ const DEFAULT_BORDER_WIDTH = '15px';
 const MILLISECONDS_PER_MINUTE = 60000;
 const DEFAULT_SNOOZE_TIME = 5;
 
+const handleMigration = () => {
+  const oldPrefsString = localStorage.getItem('urlColorPrefs');
+  if (!oldPrefsString) {
+    // send message to service worker for it to remove any badge
+    chrome.runtime.sendMessage({action: "removeBadge"}, () => {
+      if (chrome.runtime.lastError) {
+        console.log('Error sending message to service worker for removing badge.')
+        console.error(chrome.runtime.lastError);
+      } else {
+        console.log('Message sent to service worker for removing badge.');
+      }
+    });
+    return;
+  }
+  const oldPrefs = JSON.parse(oldPrefsString);
+  chrome.storage.local.set({
+    prefs: {
+      keywords: oldPrefs.urlColorPairs,
+      opacity: oldPrefs.opacity,
+      borderWidth: oldPrefs.borderWidth,
+    },
+    active: oldPrefs.active,
+    snoozeUntil: oldPrefs.expirationTimeUnix,
+    snoozeTime: oldPrefs.snoozeTime,
+  }, () => {
+    console.log('Settings migrated. Deleting old settings.');
+    localStorage.removeItem('urlColorPrefs');
+    // send message to service worker for it to change badge to green checkmark
+    chrome.runtime.sendMessage({action: "settingsMigrated"}, () => {
+        if (chrome.runtime.lastError) {
+            console.log('Error sending message to service worker for settings migration.')
+            console.error(chrome.runtime.lastError);
+        } else {
+            console.log('Message sent to service worker for settings migration.');
+        }
+    });
+  });
+
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  // Handle Migration if necessary.
+  handleMigration();
   // Define elements
   const keywordsInput = document.getElementById('url-settings');
   const opacityInput = document.getElementById('opacity');
