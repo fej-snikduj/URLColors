@@ -2,13 +2,12 @@
   "name": "URLColors",
   "short_name": "URLColors",
   "description": "A chrome extension that adds a colored border around websites that match user inputted preferences.",
-  "version": "2.1",
+  "version": "2.2",
   "manifest_version": 3,
   "host_permissions": ["https://*/*"],
   "permissions": [
     "storage",
     "tabs",
-    "activeTab",
     "scripting"
   ],
   "background": {
