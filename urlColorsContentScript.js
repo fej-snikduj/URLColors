@@ -68,6 +68,9 @@ const getMatchedPrefs = (prefs) => {
   const matchedPrefs = [];
 
   prefs.keywords.split('\n').forEach(line => {
+    if (!line) {
+      return;
+    }
     // Parse the line for keyword and settings
     const [keyword, color, flash, timer, borderWidth = prefs?.borderWidth, opacity = prefs?.opacity] = line.split(',').map(s => s.trim());
     const regex = new RegExp(keyword.replace(/\*/g, '.*'), 'i'); // Convert wildcard to regex pattern
@@ -81,14 +84,14 @@ const getMatchedPrefs = (prefs) => {
 }
 
 
-const updatePageWithPrefs = (prefs) => {
+const updatePageWithPrefs = (matchedPrefs, defaultBorderWidth, defaultOpacity) => {
   // Get the current tab URL
   const currentUrl = window.location.href;
 
   // Iterate through each line of preferences
-  prefs.keywords.split('\n').forEach(line => {
+  matchedPrefs.forEach(pref => {
     // Parse the line for keyword and settings
-    const [keyword, color, flash, timer, borderWidth = prefs?.borderWidth, opacity = prefs?.opacity] = line.split(',').map(s => s.trim());
+    const { keyword, color, flash, timer, borderWidth = defaultBorderWidth, opacity = defaultOpacity } = pref;
     const regex = new RegExp(keyword.replace(/\*/g, '.*'), 'i'); // Convert wildcard to regex pattern
 
     // If the current URL matches the keyword pattern
@@ -119,7 +122,7 @@ const applyPreferences = () => {
         return;
     }
     logMessageIfEnabled(`URLColors: ${matchedPrefs.length} match(s) found for URL: ${window.location.href}. Updating page with border preferences.`, matchedPrefs);
-    updatePageWithPrefs(data.prefs);
+    updatePageWithPrefs(matchedPrefs, data?.prefs?.borderWidth, data?.prefs?.opacity);
   });
 }
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
