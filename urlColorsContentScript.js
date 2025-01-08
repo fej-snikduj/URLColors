@@ -45,8 +45,8 @@ const addNewDivs = (color, flash, timer, borderWidth, opacity) => {
   });
 
   vertical.forEach((div) => {
-    div.style.top = '0';
-    div.style.bottom = '0';
+    div.style.top = borderWidth;
+    div.style.bottom = borderWidth;
     div.style.width = borderWidth;
   });
 
