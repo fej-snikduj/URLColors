@@ -11,7 +11,12 @@
   },
   "action": {
     "default_popup": "urlColorsPopup.html",
-    "default_icon": "urlColorsIcon.png"
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
   },
   "content_scripts": [
     {
@@ -21,6 +26,9 @@
     }
   ],
   "icons": {
-    "48": "urlColorsIcon.png"
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   }
 }
