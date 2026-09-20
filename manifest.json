@@ -5,11 +5,7 @@
   "version": "2.3",
   "manifest_version": 3,
   "host_permissions": ["https://*/*"],
-  "permissions": [
-    "storage",
-    "tabs",
-    "scripting"
-  ],
+  "permissions": ["storage", "tabs", "scripting"],
   "background": {
     "service_worker": "urlColorsServiceWorker.js"
   },
