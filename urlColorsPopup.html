@@ -114,15 +114,16 @@
         animation: shimmer 3.5s linear infinite;
       }
 
-      /* Sits in the sticky header so the ask stays visible without scrolling
-         to the support card at the bottom. */
+      /* Sits in the sticky header so the ask stays visible without scrolling to
+         the support card. Square-ish corners read as an action; the rounded
+         pill shape is reserved for the supporter status badge. */
       #support-badge {
         flex: none;
         font-size: 11px;
         font-weight: 600;
         white-space: nowrap;
-        padding: 3px 9px;
-        border-radius: 999px;
+        padding: 4px 9px;
+        border-radius: var(--radius-sm);
         text-decoration: none;
         color: #6b5200;
         background: #fff4c2;
@@ -654,8 +655,8 @@
         href="https://buymeacoffee.com/fejsnikduj"
         target="_blank"
         rel="noopener"
-        title="Support URL Colors on Buy Me a Coffee"
-        >☕ Support</a
+        title="Buy me a coffee — support URL Colors"
+        >☕ Buy me a coffee</a
       >
       <span id="supporter-badge">☕ Supporter</span>
     </header>
