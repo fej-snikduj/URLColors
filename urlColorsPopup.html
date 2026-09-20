@@ -114,6 +114,45 @@
         animation: shimmer 3.5s linear infinite;
       }
 
+      /* Sits in the sticky header so the ask stays visible without scrolling
+         to the support card at the bottom. */
+      #support-badge {
+        flex: none;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+        padding: 3px 9px;
+        border-radius: 999px;
+        text-decoration: none;
+        color: #6b5200;
+        background: #fff4c2;
+        border: 1px solid #f0dd9a;
+      }
+
+      #support-badge:hover {
+        background: #ffdd00;
+        border-color: #e8c800;
+        color: #0f0f0f;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        #support-badge {
+          color: #f2e3a8;
+          background: #352f14;
+          border-color: #574c1d;
+        }
+
+        #support-badge:hover {
+          background: #ffdd00;
+          border-color: #ffdd00;
+          color: #0f0f0f;
+        }
+      }
+
+      body.supporter #support-badge {
+        display: none;
+      }
+
       @keyframes shimmer {
         to {
           background-position: 200% center;
@@ -610,6 +649,14 @@
         <span class="brand-mark"></span>
         <h1>URL Colors</h1>
       </div>
+      <a
+        id="support-badge"
+        href="https://buymeacoffee.com/fejsnikduj"
+        target="_blank"
+        rel="noopener"
+        title="Support URL Colors on Buy Me a Coffee"
+        >☕ Support</a
+      >
       <span id="supporter-badge">☕ Supporter</span>
     </header>
 
