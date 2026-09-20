@@ -1,108 +1,253 @@
 <!doctype html>
 <html>
   <head>
+    <meta charset="UTF-8" />
     <title>URL Colors</title>
     <style>
-    body {
-      margin: 0px;
-      padding: 0px;
-      background: white;
-      width: 500px;
-      height: 800px;
-      font-size: 1rem;
-    }
-    div {
-      margin: 10px;
-    }
-    .settings {
-      width: 100%;
-      margin: 10px;
-    }
-    textArea {
-      height: 350px;
-      width: 90%;
-    }
-    input {
-      width: 25%;
-    }
-    .note {
-      margin-top: 2px;
-      margin-bottom: 5px;
-      font-size: .8rem;
-    }
-    #expiration-time {
-      color: red;
-      margin-top: 5px;
-    }
-    .banner {
-      background-color: #f9ed69; /* Light yellow background */
-      color: black;
-      padding: 10px;
-      position: relative;
-      display: none; /* Initially hidden */
-    }
+      body {
+        margin: 0px;
+        padding: 0px;
+        background: white;
+        width: 500px;
+        height: 800px;
+        font-size: 1rem;
+      }
+      div {
+        margin: 10px;
+      }
+      .settings {
+        margin: 10px;
+      }
+      /* Headings sit on the container's edge while the inner divs pick up the
+         global 10px div margin, so match it to keep one left edge. */
+      .settings h3 {
+        margin-left: 10px;
+      }
+      textArea {
+        height: 350px;
+        width: 90%;
+      }
+      input {
+        width: 25%;
+      }
+      .note {
+        margin-top: 2px;
+        margin-bottom: 5px;
+        font-size: 0.8rem;
+      }
+      #expiration-time {
+        color: red;
+        margin-top: 5px;
+      }
+      .banner {
+        background-color: #f9ed69; /* Light yellow background */
+        color: black;
+        padding: 10px;
+        position: relative;
+        display: none; /* Initially hidden */
+      }
 
-    #dismissBanner {
-      position: absolute;
-      right: 10px;
-      top: 10px;
-      border: none;
-      background-color: transparent;
-      cursor: pointer;
-    }
+      #dismissBanner {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+      }
+      #header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 10px 0 10px;
+      }
+      #header h2 {
+        margin: 0;
+        font-size: 1.1rem;
+      }
+      #supporter-badge {
+        display: none;
+        font-size: 0.8rem;
+        background: linear-gradient(90deg, #ffd700, #ffb347, #ffd700);
+        background-size: 200% auto;
+        color: #5a3d00;
+        padding: 2px 8px;
+        border-radius: 10px;
+        animation: shimmer 3s linear infinite;
+      }
+      @keyframes shimmer {
+        to {
+          background-position: 200% center;
+        }
+      }
+      #page {
+        margin: 0;
+        padding-bottom: 24px;
+      }
+      /* The frame is this box's own border, and the content scrolls inside it,
+         so content clips at the edge instead of passing under the gold line. */
+      body.supporter {
+        overflow: hidden;
+      }
+      body.supporter #page {
+        position: fixed;
+        inset: 0;
+        overflow-y: auto;
+        box-sizing: border-box;
+        background: white;
+        border: 5px solid #ffd700;
+        animation: goldBorderPulse 4s ease-in-out infinite;
+      }
+      @keyframes goldBorderPulse {
+        0%,
+        100% {
+          border-color: #ffd700;
+        }
+        50% {
+          border-color: #ffb347;
+        }
+      }
+      .support-section {
+        border-top: 1px solid #eee;
+        padding-top: 10px;
+      }
+      .coffee-button {
+        display: inline-block;
+        background-color: #ffdd00;
+        color: #000;
+        font-weight: bold;
+        text-decoration: none;
+        padding: 8px 14px;
+        border-radius: 6px;
+        font-size: 0.95rem;
+      }
+      .coffee-button:hover {
+        background-color: #ffd000;
+      }
+      #thank-you-note {
+        display: none;
+        margin-top: 8px;
+        font-size: 0.85rem;
+      }
+      .redeem-row {
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      #redeem-code {
+        width: 160px;
+      }
+      #redeem-message {
+        font-size: 0.8rem;
+        margin-top: 4px;
+      }
+      #redeem-message.error {
+        color: #c00;
+      }
+      .confetti-piece {
+        position: fixed;
+        top: -10px;
+        width: 8px;
+        height: 8px;
+        opacity: 0.9;
+        pointer-events: none;
+        animation: confettiFall linear forwards;
+        z-index: 9999;
+      }
+      @keyframes confettiFall {
+        to {
+          transform: translateY(820px) rotate(360deg);
+          opacity: 0;
+        }
+      }
     </style>
     <script src="urlColorsPopup.js"></script>
   </head>
   <body>
-  <div id="wildcardBanner" class="banner">
-    Wildcards (*) now supported
-    <button id="dismissBanner">X</button>
-  </div>
-    <div class="settings">
-      <h3> Snooze </h3>
-      <div>
-        Snooze for: <input type="number" name="snooze-duration" id="snooze-duration" checked> minutes.
-        <button id="snooze"> Snooze </button>
-        <button id="cancel" disabled> Cancel </button>
-        <div id="expiration-time"></div>
+    <div id="page">
+      <div id="header">
+        <h2>URL Colors</h2>
+        <span id="supporter-badge">☕ Supporter</span>
       </div>
-      <h3> Settings </h3>
-      <div>
-        Active: <input type="checkbox" name="active" id="active-checkbox" checked><br>
+      <div id="wildcardBanner" class="banner">
+        Wildcards (*) now supported
+        <button id="dismissBanner">X</button>
       </div>
-      <div>
-        Console Logging: <input type="checkbox" name="active" id="logging-checkbox"><br> (for debugging your configuration)
+      <div class="settings">
+        <h3>Snooze</h3>
+        <div>
+          Snooze for:
+          <input type="number" name="snooze-duration" id="snooze-duration" checked /> minutes.
+          <button id="snooze">Snooze</button>
+          <button id="cancel" disabled>Cancel</button>
+          <div id="expiration-time"></div>
+        </div>
+        <h3>Settings</h3>
+        <div>
+          Active: <input type="checkbox" name="active" id="active-checkbox" checked /><br />
+        </div>
+        <div>
+          Console Logging: <input type="checkbox" name="active" id="logging-checkbox" /><br />
+          (for debugging your configuration)
+        </div>
+        <div>
+          Default Border Width:
+          <input type="text" name="border-width" id="border-width" placeholder="15px" /><br />
+        </div>
+        <div>
+          Default Opacity: <input type="text" name="opacity" id="opacity" placeholder=".2" /><br />
+        </div>
+        <div class="note">
+          Note: use 100vw as border width and a low opacity (.05) for a full screen colored mask
+          <br />
+          You can override these default settings for individual keyword matches below.
+        </div>
+      </div>
+      <div class="settings">
+        <h3>Url Keyword Options</h3>
+        <div class="note">
+          Note: Each set of keyword options is on a new line with the format for each being: <br />
+          <strong>keyword, color, [flash], [timer], [border width], [opacity] </strong><br />
+          Where keyword and color are required. <br /><br />
+          Note, you may use the wildcard character within the keyword (<strong>*</strong>)!
+          <br /><br />
+          If you type in 'flash' as the third word, then the box will blink at the interval set by
+          the optional parameter 'timer'. You can also specify custom border width and opacity
+          values that will override the default values above.<br />
+        </div>
 
-      </div>
-      <div>
-        Default Border Width: <input type="text" name="border-width" id="border-width" placeholder="15px"><br>
-      </div>
-      <div>
-        Default Opacity: <input type="text" name="opacity" id="opacity" placeholder=".2"><br>
-      </div>
-      <div class="note">
-        Note: use 100vw as border width and a low opacity (.05) for a full screen colored mask <br>
-        You can override these default settings for individual keyword matches below.
-      </div>
-    </div>
-    <div class="settings">
-      <h3> Url Keyword Options </h3>
-      <div class="note">
-        Note: Each set of keyword options is on a new line with the format for each being: <br>
-         <strong>keyword, color, [flash], [timer], [border width], [opacity] </strong><br>
-         Where keyword and color are required. <br><br> Note, you may use the wildcard character within the keyword (<strong>*</strong>)! <br><br>
-        If you type in 'flash' as the third word, then the box will blink at the interval set by the optional parameter 'timer'.
-        You can also specify custom border width and opacity values that will override the default values above.<br>
-      </div>
-
-      <div>
-        <br>
-        <textarea id="url-settings"
-          placeholder=
-"google.com, blue
+        <div>
+          <br />
+          <textarea
+            id="url-settings"
+            placeholder="google.com, blue
 facebook.com, green, flash, 4
 www.*.mywildcard.com, pink"
-        ></textarea>
+          ></textarea>
+        </div>
+      </div>
+      <div class="settings support-section">
+        <h3>Support This Extension</h3>
+        <div>
+          URL Colors is free. If it's saved you from an "oops, that was prod" moment, consider
+          buying me a coffee.
+        </div>
+        <div style="margin-top: 8px">
+          <a
+            class="coffee-button"
+            href="https://buymeacoffee.com/fejsnikduj"
+            target="_blank"
+            rel="noopener"
+            >☕ Buy me a coffee</a
+          >
+        </div>
+        <div id="thank-you-note">Thanks so much for your support! 💛</div>
+        <div class="redeem-row" id="redeem-row">
+          <input type="text" id="redeem-code" placeholder="Got a supporter code?" />
+          <button id="redeem-button">Unlock</button>
+        </div>
+        <div id="redeem-message"></div>
       </div>
     </div>
   </body>
