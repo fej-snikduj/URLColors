@@ -675,6 +675,11 @@ www.*.mywildcard.com, pink"
               interval in seconds.
             </li>
             <li>Trailing width and opacity values override the defaults above.</li>
+            <li>
+              Values are positional, so use <code>null</code> to skip one — e.g.
+              <code>google.com, blue, null, null, 40px, .9</code> sets width and opacity without
+              turning on flashing.
+            </li>
           </ul>
         </details>
       </section>

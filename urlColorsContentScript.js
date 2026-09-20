@@ -1,3 +1,12 @@
+const DEFAULT_FLASH_TIMER = "1";
+
+// A rule's trailing values are positional, so "null" (or an empty slot) lets a
+// rule skip flash/timer and still set its own border width or opacity.
+const optionalValue = (value) => {
+  const trimmed = value?.trim();
+  return !trimmed || trimmed.toLowerCase() === "null" ? undefined : trimmed;
+};
+
 const logMessageIfEnabled = (...args) => {
   chrome.storage.local.get(["logging"], (data) => {
     if (data.logging) {
@@ -16,9 +25,12 @@ const removePreviousDivs = () => {
 };
 
 const addNewDivs = (color, flash, timer, borderWidth, opacity) => {
-  const style = document.createElement("style");
-  style.innerHTML = `.urlColorAnimate { animation: blinker ${timer}s linear infinite; } @keyframes blinker { 0% { opacity: ${opacity}; } 50% { opacity: 0; } 100% { opacity: ${opacity}; } }`;
-  document.getElementsByTagName("head")[0].appendChild(style);
+  const isFlashing = flash === "flash";
+  if (isFlashing) {
+    const style = document.createElement("style");
+    style.innerHTML = `.urlColorAnimate { animation: blinker ${timer || DEFAULT_FLASH_TIMER}s linear infinite; } @keyframes blinker { 0% { opacity: ${opacity}; } 50% { opacity: 0; } 100% { opacity: ${opacity}; } }`;
+    document.getElementsByTagName("head")[0].appendChild(style);
+  }
   const leftDiv = document.createElement("div");
   const rightDiv = document.createElement("div");
   const topDiv = document.createElement("div");
@@ -56,7 +68,7 @@ const addNewDivs = (color, flash, timer, borderWidth, opacity) => {
 
   divs.forEach((div) => {
     document.body.appendChild(div);
-    if (flash === "flash") {
+    if (isFlashing) {
       div.classList.add("urlColorAnimate");
     }
   });
@@ -71,14 +83,13 @@ const getMatchedPrefs = (prefs) => {
       return;
     }
     // Parse the line for keyword and settings
-    const [
-      keyword,
-      color,
-      flash,
-      timer,
-      borderWidth = prefs?.borderWidth,
-      opacity = prefs?.opacity,
-    ] = line.split(",").map((s) => s.trim());
+    const [keyword, color, rawFlash, rawTimer, rawBorderWidth, rawOpacity] = line
+      .split(",")
+      .map((s) => s.trim());
+    const flash = optionalValue(rawFlash);
+    const timer = optionalValue(rawTimer);
+    const borderWidth = optionalValue(rawBorderWidth) ?? prefs?.borderWidth;
+    const opacity = optionalValue(rawOpacity) ?? prefs?.opacity;
     const regex = new RegExp(keyword.replace(/\*/g, ".*"), "i"); // Convert wildcard to regex pattern
 
     // If the current URL matches the keyword pattern
