@@ -3,7 +3,7 @@ const DEFAULT_BORDER_WIDTH = "15px";
 const MILLISECONDS_PER_MINUTE = 60000;
 const DEFAULT_SNOOZE_TIME = 5;
 const SUPPORTER_CODE = "URLCOLORSVIP";
-const CONFETTI_COLORS = ["#ffd700", "#ff6b6b", "#4ecdc4", "#a78bfa", "#ffb347"];
+const CONFETTI_COLORS = ["#ffd964", "#ff6b6b", "#4ecdc4", "#a78bfa", "#ffb347"];
 
 const handleMigration = () => {
   const oldPrefsString = localStorage.getItem("urlColorPrefs");
@@ -62,7 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const expirationTimeDiv = document.getElementById("expiration-time");
   const banner = document.getElementById("wildcardBanner");
   const dismissBtn = document.getElementById("dismissBanner");
-  const supporterBadge = document.getElementById("supporter-badge");
   const thankYouNote = document.getElementById("thank-you-note");
   const redeemRow = document.getElementById("redeem-row");
   const redeemCodeInput = document.getElementById("redeem-code");
@@ -71,9 +70,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const applySupporterTheme = () => {
     document.body.classList.add("supporter");
-    supporterBadge.style.display = "inline-block";
     thankYouNote.style.display = "block";
-    redeemRow.style.display = "none";
+    redeemRow.classList.add("is-hidden");
   };
 
   const launchConfetti = () => {
@@ -82,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
       piece.className = "confetti-piece";
       piece.style.left = `${Math.random() * 100}%`;
       piece.style.backgroundColor = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
-      piece.style.animationDuration = `${0.8 + Math.random() * 0.6}s`;
+      piece.style.animationDuration = `${0.9 + Math.random() * 0.7}s`;
       document.body.appendChild(piece);
       piece.addEventListener("animationend", () => piece.remove());
     }
@@ -99,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       snoozeButton.disabled = true;
       cancelButton.disabled = false;
-      expirationTimeDiv.textContent = `Snoozed until: ${new Date(snoozeUntil).toLocaleString()}`;
+      expirationTimeDiv.textContent = `Snoozed until ${new Date(snoozeUntil).toLocaleString()}`;
     }
   };
 
@@ -116,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
       snoozeDurationInput.value = data?.snoozeTime || DEFAULT_SNOOZE_TIME;
       resetSnoozeUIIfExpired(data?.snoozeUntil);
       if (data?.bannerDismissed === undefined) {
-        banner.style.display = "block";
+        banner.classList.remove("is-hidden");
       }
       if (data?.isSupporter) {
         applySupporterTheme();
@@ -182,12 +180,10 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("Supporter unlocked.");
       });
       redeemMessage.textContent = "";
-      redeemMessage.className = "";
       applySupporterTheme();
       launchConfetti();
     } else {
       redeemMessage.textContent = "That code doesn't look right — check your thank-you email.";
-      redeemMessage.className = "error";
     }
   };
 
@@ -199,7 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   dismissBtn.addEventListener("click", () => {
-    banner.style.display = "none"; // Hide the banner
+    banner.classList.add("is-hidden");
     chrome.storage.local.set({ bannerDismissed: true }, () => {
       console.log(`Banner dismissed.`);
     });
@@ -209,7 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (changes.snoozeUntil && namespace === "local") {
       if (changes.snoozeUntil) {
         if (changes.snoozeUntil.newValue) {
-          expirationTimeDiv.textContent = `Snoozed until: ${new Date(changes.snoozeUntil.newValue).toLocaleString()}`;
+          expirationTimeDiv.textContent = `Snoozed until ${new Date(changes.snoozeUntil.newValue).toLocaleString()}`;
           snoozeButton.disabled = true;
           cancelButton.disabled = false;
         } else {
