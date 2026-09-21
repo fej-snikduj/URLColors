@@ -1,5 +1,14 @@
 let snoozeTimeout;
 
+// The content script is declared for <all_urls>, which covers file:// too when
+// the user has turned on "Allow access to file URLs" — so this filter exists to
+// skip the schemes Chrome never injects into (chrome://, devtools://,
+// chrome-extension://, about:), not to narrow things to the web. tab.url is
+// also empty until a tab commits a navigation, hence the guard.
+const SCRIPTABLE_SCHEMES = ["http://", "https://", "file://"];
+const isScriptableTab = (tab) =>
+  Boolean(tab?.url) && SCRIPTABLE_SCHEMES.some((scheme) => tab.url.startsWith(scheme));
+
 const updateValue = (property, value) => {
   chrome.storage.local.set({ [property]: value }, () => {
     console.log(`Updated ${property} to: `, value);
@@ -44,10 +53,8 @@ const injectContentScript = (tabId, callback) => {
 
 const injectContentScriptOnAllTabs = () => {
   chrome.tabs.query({}, (tabs) => {
-    tabs.forEach((tab) => {
-      if (tab.url.startsWith("http://") || tab.url.startsWith("https://")) {
-        injectContentScript(tab.id);
-      }
+    tabs.filter(isScriptableTab).forEach((tab) => {
+      injectContentScript(tab.id);
     });
   });
 };
@@ -78,8 +85,7 @@ const attemptToSendMessage = (tabId) => {
 const sendUpdateMessageToAllTabs = (originator) => {
   console.log("sendUpdateMessageToAllTabs called with originator:", originator);
   chrome.tabs.query({}, (tabs) => {
-    console.log("tabs", tabs);
-    tabs.forEach((tab) => {
+    tabs.filter(isScriptableTab).forEach((tab) => {
       attemptToSendMessage(tab.id);
     });
   });
@@ -87,7 +93,11 @@ const sendUpdateMessageToAllTabs = (originator) => {
 
 const setBadge = (text, color, title) => {
   chrome.action.setBadgeText({ text });
-  chrome.action.setBadgeBackgroundColor({ color });
+  // An empty string is not a parseable colour, and clearing the badge text is
+  // enough to hide it, so only set a colour when there is one.
+  if (color) {
+    chrome.action.setBadgeBackgroundColor({ color });
+  }
   chrome.action.setTitle({ title });
 };
 
@@ -122,10 +132,18 @@ chrome.runtime.onInstalled.addListener((details) => {
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  // Only update if URL has changed and status is complete.
+  // Only update if URL has changed and status is complete. Tabs the content
+  // script cannot run in (chrome://, the web store, the new tab page) would
+  // otherwise report a delivery failure on every event.
+  if (!isScriptableTab(tab)) {
+    return;
+  }
+  if (changeInfo.status !== "complete" && !changeInfo.url) {
+    return;
+  }
   chrome.tabs.sendMessage(tab.id, { action: "updateTab" }, (response) => {
     if (chrome.runtime.lastError) {
-      console.error(chrome.runtime.lastError);
+      console.log(`Tab ${tab.id} did not receive updateTab: ${chrome.runtime.lastError.message}`);
     } else {
       console.log("Sent message to update tab with id: ", tab.id, " with response:", response);
     }
@@ -148,4 +166,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "removeBadge") {
     removeBadge();
   }
+  // Always answer: the popup passes a callback, and without a response the
+  // port closes and surfaces as a lastError there.
+  sendResponse({ received: message.action });
 });
