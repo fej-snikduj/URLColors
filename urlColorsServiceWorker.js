@@ -1,9 +1,13 @@
 let snoozeTimeout;
 
-// Content scripts only run on http(s) pages; tab.url can also be undefined
-// before a tab has committed a navigation.
+// The content script is declared for <all_urls>, which covers file:// too when
+// the user has turned on "Allow access to file URLs" — so this filter exists to
+// skip the schemes Chrome never injects into (chrome://, devtools://,
+// chrome-extension://, about:), not to narrow things to the web. tab.url is
+// also empty until a tab commits a navigation, hence the guard.
+const SCRIPTABLE_SCHEMES = ["http://", "https://", "file://"];
 const isScriptableTab = (tab) =>
-  Boolean(tab?.url) && (tab.url.startsWith("http://") || tab.url.startsWith("https://"));
+  Boolean(tab?.url) && SCRIPTABLE_SCHEMES.some((scheme) => tab.url.startsWith(scheme));
 
 const updateValue = (property, value) => {
   chrome.storage.local.set({ [property]: value }, () => {
