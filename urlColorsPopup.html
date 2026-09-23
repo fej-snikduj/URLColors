@@ -333,11 +333,19 @@
       }
 
       input[type="text"]:focus,
-      input[type="number"]:focus,
-      textarea:focus {
+      input[type="number"]:focus {
         outline: none;
         border-color: var(--accent);
         box-shadow: 0 0 0 3px var(--accent-soft);
+      }
+      /* The textarea sits inside the editor's own border, so a ring on the
+         textarea draws a second box inside the first. Move the focus ring out
+         to the editor so it frames the gutter and the rules together. */
+      textarea:focus {
+        outline: none;
+      }
+      .editor:focus-within {
+        border-color: var(--accent);
       }
 
       .hint {
@@ -444,18 +452,61 @@
         border-bottom: 1px solid var(--border);
       }
 
+      /* The dot gutter lines up row-for-row with the textarea, so both must use
+         this exact line height, and rules must not wrap onto a second row. */
+      .editor {
+        --rule-line: 20px;
+        --rule-pad: 9px;
+      }
+      .editor-body {
+        display: flex;
+        align-items: stretch;
+      }
+      .rule-dots {
+        flex: none;
+        width: 22px;
+        padding: var(--rule-pad) 0 0 var(--rule-pad);
+        overflow: hidden;
+      }
+      /* Centre the dot in the row box rather than relying on vertical-align,
+         which aligns to the baseline and sits slightly high against the text. */
+      .rule-dots i {
+        display: flex;
+        align-items: center;
+        height: var(--rule-line);
+      }
+      .rule-dots i::before {
+        content: "";
+        display: block;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: transparent;
+        box-shadow: inset 0 0 0 1.5px var(--border-strong);
+      }
+      /* A parseable colour fills the dot. The ring has to be darker than the
+         hollow one above, or a pale colour like white reads as "no colour". */
+      .rule-dots i.has-color::before {
+        background: var(--dot);
+        box-shadow:
+          inset 0 0 0 1px rgba(0, 0, 0, 0.45),
+          0 0 0 0.5px rgba(255, 255, 255, 0.25);
+      }
       textarea {
         display: block;
-        width: 100%;
+        flex: 1;
+        min-width: 0;
         height: 132px;
         resize: vertical;
         border: none;
-        padding: 9px;
+        padding: var(--rule-pad) var(--rule-pad) var(--rule-pad) 0;
         background: transparent;
         color: var(--text);
         font-family: var(--mono);
         font-size: 12px;
-        line-height: 1.6;
+        line-height: var(--rule-line);
+        white-space: pre;
+        overflow-x: auto;
       }
 
       .help {
@@ -723,13 +774,16 @@
         <h2 class="card-title">URL rules</h2>
         <div class="editor">
           <div class="editor-head">keyword, color, [flash], [timer], [width], [opacity]</div>
-          <textarea
-            id="url-settings"
-            spellcheck="false"
-            placeholder="google.com, blue
+          <div class="editor-body">
+            <div class="rule-dots" aria-hidden="true"><div id="rule-dots"></div></div>
+            <textarea
+              id="url-settings"
+              spellcheck="false"
+              placeholder="google.com, blue
 facebook.com, green, flash, 4
 www.*.mywildcard.com, pink"
-          ></textarea>
+            ></textarea>
+          </div>
         </div>
         <details class="help">
           <summary>How rules work</summary>
