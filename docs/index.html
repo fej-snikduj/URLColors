@@ -422,17 +422,50 @@
         color: var(--muted);
         font-size: 15px;
       }
-      .foot-inner {
+      /* Everything in the top row is a single line, so it all shares one centre
+         line; the credit sits beneath as fine print rather than making the left
+         column two lines tall and pushing the row out of alignment. */
+      .foot-top {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        gap: 20px;
-        flex-wrap: wrap;
+        gap: 16px 28px;
+      }
+      .foot-brand {
+        margin-right: auto;
+        font-weight: 600;
+        color: var(--text);
       }
       .foot-links {
         display: flex;
         gap: 20px;
-        flex-wrap: wrap;
+      }
+      .foot-credit {
+        margin: 24px 0 0;
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+        font-size: 14px;
+      }
+      /* "@fej-snikduj" would otherwise break at its hyphen on narrow screens. */
+      .foot-credit a {
+        white-space: nowrap;
+      }
+      /* Stack before the row runs out of room, rather than letting it wrap
+         into a ragged second line. */
+      @media (max-width: 720px) {
+        .foot-top {
+          flex-direction: column;
+          text-align: center;
+        }
+        .foot-brand {
+          margin-right: 0;
+        }
+        .foot-links {
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+        .foot-credit {
+          text-align: center;
+        }
       }
       .foot-links a {
         color: var(--muted);
@@ -727,26 +760,31 @@
     </main>
 
     <footer>
-      <div class="wrap foot-inner">
-        <div>
-          <div style="font-weight: 600; color: var(--text)">URLColors</div>
-          <div>
-            Free and open source. Built in 2017 by
-            <a href="https://github.com/fej-snikduj" target="_blank" rel="noopener">@fej-snikduj</a>
-            and <a href="https://github.com/dzoba" target="_blank" rel="noopener">@dzoba</a>.
-          </div>
-        </div>
-        <nav class="foot-links">
+      <div class="wrap">
+        <div class="foot-top">
+          <span class="foot-brand">URLColors</span>
+          <nav class="foot-links">
+            <a
+              href="https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm"
+              >Chrome Web Store</a
+            >
+            <a href="https://github.com/fej-snikduj/URLColors">GitHub</a>
+            <a href="#faq">FAQ</a>
+          </nav>
           <a
-            href="https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm"
-            >Chrome Web Store</a
+            class="coffee"
+            href="https://buymeacoffee.com/fejsnikduj"
+            target="_blank"
+            rel="noopener"
           >
-          <a href="https://github.com/fej-snikduj/URLColors">GitHub</a>
-          <a href="#faq">FAQ</a>
-        </nav>
-        <a class="coffee" href="https://buymeacoffee.com/fejsnikduj" target="_blank" rel="noopener">
-          ☕ Buy me a coffee
-        </a>
+            ☕ Buy me a coffee
+          </a>
+        </div>
+        <p class="foot-credit">
+          Free and open source. Built in 2017 by
+          <a href="https://github.com/fej-snikduj" target="_blank" rel="noopener">@fej-snikduj</a>
+          and <a href="https://github.com/dzoba" target="_blank" rel="noopener">@dzoba</a>.
+        </p>
       </div>
     </footer>
   </body>
