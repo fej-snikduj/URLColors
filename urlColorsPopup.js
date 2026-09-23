@@ -84,7 +84,24 @@ document.addEventListener("DOMContentLoaded", () => {
       return dot;
     });
     ruleDots.replaceChildren(...dots);
-    ruleDots.style.transform = `translateY(${-keywordsInput.scrollTop}px)`;
+  };
+
+  // Size the rules editor to its content so it never scrolls vertically.
+  // scrollHeight alone comes up short — Chrome leaves out a textarea's bottom
+  // padding, and a horizontal scrollbar from a long rule eats into the height
+  // — so measure whatever still overflows and grow by exactly that.
+  const sizeRulesEditor = () => {
+    keywordsInput.style.height = "auto";
+    keywordsInput.style.height = `${keywordsInput.scrollHeight}px`;
+    const overflow = keywordsInput.scrollHeight - keywordsInput.clientHeight;
+    if (overflow > 0) {
+      keywordsInput.style.height = `${keywordsInput.offsetHeight + overflow}px`;
+    }
+  };
+
+  const refreshRulesEditor = () => {
+    sizeRulesEditor();
+    renderRuleDots();
   };
 
   const applySupporterTheme = () => {
@@ -138,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data?.isSupporter) {
         applySupporterTheme();
       }
-      renderRuleDots();
+      refreshRulesEditor();
     }
   );
 
@@ -163,10 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Event listeners for real-time preference updates
   keywordsInput.addEventListener("input", savePreferences);
-  keywordsInput.addEventListener("input", renderRuleDots);
-  keywordsInput.addEventListener("scroll", () => {
-    ruleDots.style.transform = `translateY(${-keywordsInput.scrollTop}px)`;
-  });
+  keywordsInput.addEventListener("input", refreshRulesEditor);
   opacityInput.addEventListener("input", savePreferences);
   borderWidthInput.addEventListener("input", savePreferences);
   activeCheckbox.addEventListener("change", savePreferences);
