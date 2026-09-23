@@ -218,6 +218,20 @@
         border: 1px solid var(--border);
         display: block;
       }
+      /* Captured from the extension page, the popup has no window chrome, so
+         give it back the rounded corners and lift Chrome draws around a real
+         popup panel. */
+      .popup-shot {
+        display: block;
+        margin: 0 auto;
+        width: 100%;
+        max-width: 380px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        box-shadow:
+          0 2px 4px rgba(20, 24, 33, 0.08),
+          0 12px 32px rgba(20, 24, 33, 0.14);
+      }
 
       /* ---------- sections ---------- */
       section {
@@ -605,11 +619,11 @@
             </div>
             <div>
               <img
+                class="popup-shot"
                 src="assets/popup.png"
                 width="816"
                 height="1296"
-                alt="The URLColors popup showing the Active and Console logging toggles, a Snooze control, default border width and opacity fields, and a list of URL rules."
-                style="width: 100%; max-width: 380px; display: block; margin: 0 auto"
+                alt="The URLColors popup showing the Active and Console logging toggles, a Snooze control, default border width and opacity fields, and a list of URL rules with a color preview dot beside each one."
               />
             </div>
           </div>
@@ -677,8 +691,9 @@
           <details>
             <summary>Is it really free?</summary>
             <p>
-              Yes, and there's no paid tier. If it's saved you from an expensive mistake, you're
-              welcome to buy me a coffee, but nothing in the extension is gated.
+              Yes, and there's no paid tier — every feature is available to everyone. If it's saved
+              you from an expensive mistake you're welcome to buy me a coffee, and supporters get a
+              cosmetic thank-you in the popup, but nothing that changes what the extension does.
             </p>
           </details>
         </div>
