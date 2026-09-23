@@ -2,7 +2,7 @@
   "name": "URLColors",
   "short_name": "URLColors",
   "description": "Know your environment. A chrome extension that adds a colored border around websites that match user inputted preferences.",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "manifest_version": 3,
   "host_permissions": ["https://*/*"],
   "permissions": ["storage", "tabs", "scripting"],
