@@ -187,6 +187,19 @@
         padding: 72px 0 40px;
         text-align: center;
       }
+      /* Matches the Web Store's own user count, so it holds up if a visitor
+         clicks through to the listing. */
+      .hero .proof {
+        display: inline-block;
+        margin: 0 0 18px;
+        padding: 5px 14px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--muted);
+        background: var(--sunken);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+      }
       .hero h1 {
         font-size: clamp(34px, 5.2vw, 56px);
         line-height: 1.1;
@@ -470,6 +483,7 @@
     <main>
       <section class="hero">
         <div class="wrap">
+          <p class="proof">Trusted by 9,000+ users since 2017</p>
           <h1>Never mistake production for staging again.</h1>
           <p class="lede">
             Your environments look identical. URLColors puts a border around any tab whose URL
@@ -716,7 +730,11 @@
       <div class="wrap foot-inner">
         <div>
           <div style="font-weight: 600; color: var(--text)">URLColors</div>
-          <div>Free and open source.</div>
+          <div>
+            Free and open source. Built in 2017 by
+            <a href="https://github.com/fej-snikduj" target="_blank" rel="noopener">@fej-snikduj</a>
+            and <a href="https://github.com/dzoba" target="_blank" rel="noopener">@dzoba</a>.
+          </div>
         </div>
         <nav class="foot-links">
           <a
