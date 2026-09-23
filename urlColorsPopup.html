@@ -444,18 +444,60 @@
         border-bottom: 1px solid var(--border);
       }
 
+      /* The dot gutter lines up row-for-row with the textarea, so both must use
+         this exact line height, and rules must not wrap onto a second row. */
+      .editor {
+        --rule-line: 20px;
+        --rule-pad: 9px;
+      }
+      .editor-body {
+        display: flex;
+        align-items: stretch;
+      }
+      .rule-dots {
+        flex: none;
+        width: 22px;
+        padding: var(--rule-pad) 0 0 var(--rule-pad);
+        overflow: hidden;
+      }
+      .rule-dots i {
+        display: block;
+        height: var(--rule-line);
+        line-height: var(--rule-line);
+      }
+      .rule-dots i::before {
+        content: "";
+        display: inline-block;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        vertical-align: middle;
+        background: transparent;
+        box-shadow: inset 0 0 0 1.5px var(--border-strong);
+      }
+      /* A parseable colour fills the dot. The ring has to be darker than the
+         hollow one above, or a pale colour like white reads as "no colour". */
+      .rule-dots i.has-color::before {
+        background: var(--dot);
+        box-shadow:
+          inset 0 0 0 1px rgba(0, 0, 0, 0.45),
+          0 0 0 0.5px rgba(255, 255, 255, 0.25);
+      }
       textarea {
         display: block;
-        width: 100%;
+        flex: 1;
+        min-width: 0;
         height: 132px;
         resize: vertical;
         border: none;
-        padding: 9px;
+        padding: var(--rule-pad) var(--rule-pad) var(--rule-pad) 0;
         background: transparent;
         color: var(--text);
         font-family: var(--mono);
         font-size: 12px;
-        line-height: 1.6;
+        line-height: var(--rule-line);
+        white-space: pre;
+        overflow-x: auto;
       }
 
       .help {
@@ -723,13 +765,16 @@
         <h2 class="card-title">URL rules</h2>
         <div class="editor">
           <div class="editor-head">keyword, color, [flash], [timer], [width], [opacity]</div>
-          <textarea
-            id="url-settings"
-            spellcheck="false"
-            placeholder="google.com, blue
+          <div class="editor-body">
+            <div class="rule-dots" aria-hidden="true"><div id="rule-dots"></div></div>
+            <textarea
+              id="url-settings"
+              spellcheck="false"
+              placeholder="google.com, blue
 facebook.com, green, flash, 4
 www.*.mywildcard.com, pink"
-          ></textarea>
+            ></textarea>
+          </div>
         </div>
         <details class="help">
           <summary>How rules work</summary>

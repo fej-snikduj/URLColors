@@ -3,6 +3,7 @@ const DEFAULT_BORDER_WIDTH = "15px";
 const MILLISECONDS_PER_MINUTE = 60000;
 const DEFAULT_SNOOZE_TIME = 5;
 const SUPPORTER_CODE = "URLCOLORSVIP";
+const RULE_COLOR_INDEX = 1;
 const CONFETTI_COLORS = ["#ffd964", "#ff6b6b", "#4ecdc4", "#a78bfa", "#ffb347"];
 
 const handleMigration = () => {
@@ -67,6 +68,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const redeemCodeInput = document.getElementById("redeem-code");
   const redeemButton = document.getElementById("redeem-button");
   const redeemMessage = document.getElementById("redeem-message");
+  const ruleDots = document.getElementById("rule-dots");
+
+  // One dot per rule line: filled when the rule's colour is something the
+  // browser can actually paint, hollow when it is missing or unparseable —
+  // which is the only feedback that a mistyped colour gives you.
+  const renderRuleDots = () => {
+    const dots = keywordsInput.value.split("\n").map((line) => {
+      const dot = document.createElement("i");
+      const color = line.split(",")[RULE_COLOR_INDEX]?.trim();
+      if (color && CSS.supports("color", color)) {
+        dot.classList.add("has-color");
+        dot.style.setProperty("--dot", color);
+      }
+      return dot;
+    });
+    ruleDots.replaceChildren(...dots);
+    ruleDots.style.transform = `translateY(${-keywordsInput.scrollTop}px)`;
+  };
 
   const applySupporterTheme = () => {
     document.body.classList.add("supporter");
@@ -119,6 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data?.isSupporter) {
         applySupporterTheme();
       }
+      renderRuleDots();
     }
   );
 
@@ -143,6 +163,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Event listeners for real-time preference updates
   keywordsInput.addEventListener("input", savePreferences);
+  keywordsInput.addEventListener("input", renderRuleDots);
+  keywordsInput.addEventListener("scroll", () => {
+    ruleDots.style.transform = `translateY(${-keywordsInput.scrollTop}px)`;
+  });
   opacityInput.addEventListener("input", savePreferences);
   borderWidthInput.addEventListener("input", savePreferences);
   activeCheckbox.addEventListener("change", savePreferences);
