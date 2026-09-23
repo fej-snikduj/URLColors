@@ -8,7 +8,7 @@ With URLColors, you can easily have the browser flag important websites for you 
 
 Website: www.urlcolors.com
 
-Chrome web store: https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm
+Chrome web store: https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm?utm_source=github&utm_medium=readme
 
 Trusted by 9,000+ users.
 
