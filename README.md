@@ -9,3 +9,7 @@ With URLColors, you can easily have the browser flag important websites for you 
 Website: www.urlcolors.com
 
 Chrome web store: https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm
+
+Trusted by over 10,000 developers.
+
+Initially built in 2017 by [@fej-snikduj](https://www.github.com/fej-snikduj) and [@dzoba](https://www.github.com/dzoba)
