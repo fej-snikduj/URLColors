@@ -72,6 +72,21 @@ const addNewDivs = (color, flash, timer, borderWidth, opacity) => {
       div.classList.add("urlColorAnimate");
     }
   });
+
+  // The side strips run the full page height, so they overlap the top and
+  // bottom strips at each corner, and with opacity below 1 those squares render
+  // darker than the rest of the border. Stop the side strips at the top and
+  // bottom strips instead. Skipped when the top and bottom strips already meet
+  // (the 100vw full-page tint), where all four strips deliberately stack and
+  // insetting would halve the tint people have tuned. Measured in pixels
+  // because borderWidth can be any CSS length (vw, em, %).
+  const borderPx = topDiv.getBoundingClientRect().height;
+  if (borderPx * 2 < document.documentElement.clientHeight) {
+    vertical.forEach((div) => {
+      div.style.top = borderWidth;
+      div.style.bottom = borderWidth;
+    });
+  }
 };
 
 const getMatchedPrefs = (prefs) => {
