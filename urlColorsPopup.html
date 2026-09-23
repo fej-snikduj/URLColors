@@ -492,12 +492,16 @@
           inset 0 0 0 1px rgba(0, 0, 0, 0.45),
           0 0 0 0.5px rgba(255, 255, 255, 0.25);
       }
+      /* Grows to fit every rule (see sizeRulesEditor) instead of scrolling
+         inside a popup that already scrolls — a nested scroll area is awkward,
+         and it would leave the dot gutter out of step with the rules. */
       textarea {
         display: block;
         flex: 1;
         min-width: 0;
-        height: 132px;
-        resize: vertical;
+        min-height: calc(var(--rule-line) * 4 + var(--rule-pad) * 2);
+        overflow-y: hidden;
+        resize: none;
         border: none;
         padding: var(--rule-pad) var(--rule-pad) var(--rule-pad) 0;
         background: transparent;
