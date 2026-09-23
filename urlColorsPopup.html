@@ -603,6 +603,25 @@
         display: none;
       }
 
+      .credits {
+        margin: 4px 0 0;
+        text-align: center;
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+
+      .credits a {
+        color: inherit;
+        text-decoration: underline;
+        text-decoration-color: var(--border-strong);
+        text-underline-offset: 2px;
+      }
+
+      .credits a:hover {
+        color: var(--accent);
+        text-decoration-color: currentColor;
+      }
+
       .is-hidden {
         display: none !important;
       }
@@ -806,6 +825,11 @@ www.*.mywildcard.com, pink"
               <code>google.com, blue, null, null, 40px, .9</code> sets width and opacity without
               turning on flashing.
             </li>
+            <li>
+              Set the width to <code>100vw</code> with a low opacity to tint the whole page instead
+              of drawing a border — e.g.
+              <code>admin.myapp.com, crimson, null, null, 100vw, .05</code>.
+            </li>
           </ul>
         </details>
       </section>
@@ -831,6 +855,12 @@ www.*.mywildcard.com, pink"
         </div>
         <div id="redeem-message"></div>
       </section>
+
+      <p class="credits">
+        Originally built in 2017 by
+        <a href="https://github.com/fej-snikduj" target="_blank" rel="noopener">@fej-snikduj</a>
+        and <a href="https://github.com/dzoba" target="_blank" rel="noopener">@dzoba</a>
+      </p>
     </main>
   </body>
 </html>
