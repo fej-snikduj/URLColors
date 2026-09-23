@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>URLColors — Color-code production, staging and dev tabs in Chrome</title>
+    <meta
+      name="description"
+      content="A free Chrome extension that puts a colored border around any tab matching your URL rules. You choose the keywords and the colors — so you never run the wrong command on the wrong environment again."
+    />
+    <link rel="canonical" href="https://urlcolors.com/" />
+    <link rel="icon" href="assets/favicon.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://urlcolors.com/" />
+    <meta property="og:title" content="URLColors — Know which environment you're on, at a glance" />
+    <meta
+      property="og:description"
+      content="A free Chrome extension that puts a colored border around any tab matching your URL rules. You choose the keywords and the colors."
+    />
+    <meta property="og:image" content="https://urlcolors.com/assets/summary.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "URLColors",
+        "applicationCategory": "BrowserApplication",
+        "operatingSystem": "Chrome",
+        "description": "Chrome extension that adds a colored border around websites matching user-defined URL rules, so developers can tell production, staging and development environments apart at a glance.",
+        "url": "https://urlcolors.com/",
+        "installUrl": "https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+      }
+    </script>
+
+    <style>
+      :root {
+        --bg: #ffffff;
+        --surface: #ffffff;
+        --sunken: #f5f6f8;
+        --border: #e2e5ea;
+        --text: #15181e;
+        --muted: #5c6470;
+        --accent: #2f6fed;
+        --accent-hover: #2560d8;
+        --on-accent: #fff;
+        --radius: 12px;
+        --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+        --shadow: 0 1px 2px rgba(20, 24, 33, 0.06), 0 8px 24px rgba(20, 24, 33, 0.06);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #101216;
+          --surface: #171a20;
+          --sunken: #1e222a;
+          --border: #2a2f39;
+          --text: #e9ebf0;
+          --muted: #9aa3b2;
+          --accent: #5b9dff;
+          --accent-hover: #7db0ff;
+          --on-accent: #0b0f18;
+          --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.35);
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      /* The width/height attributes reserve layout space, but without this the
+         height stays pinned while the width scales down, squashing the image. */
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font);
+        font-size: 17px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap {
+        width: 100%;
+        max-width: 1060px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      a {
+        color: var(--accent);
+      }
+
+      /* ---------- nav ---------- */
+      header.nav {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: color-mix(in srgb, var(--bg) 88%, transparent);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border);
+      }
+      .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        height: 64px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        font-size: 18px;
+        text-decoration: none;
+        color: var(--text);
+      }
+      .brand img {
+        width: 28px;
+        height: 28px;
+        display: block;
+      }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        font-size: 15px;
+      }
+      .nav-links a {
+        color: var(--muted);
+        text-decoration: none;
+      }
+      .nav-links a:hover {
+        color: var(--text);
+      }
+      /* .nav-links a beats .btn on specificity, so restate the button colour. */
+      .nav-links a.btn,
+      .nav-links a.btn:hover {
+        color: var(--on-accent);
+      }
+      /* The nav is sticky, so anchored headings need clearance beneath it. */
+      html {
+        scroll-padding-top: 84px;
+        scroll-behavior: smooth;
+      }
+      @media (max-width: 640px) {
+        .nav-links a:not(.btn) {
+          display: none;
+        }
+      }
+
+      .btn {
+        display: inline-block;
+        background: var(--accent);
+        color: var(--on-accent);
+        font-weight: 600;
+        font-size: 15px;
+        padding: 10px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+      .btn:hover {
+        background: var(--accent-hover);
+      }
+      .btn-lg {
+        font-size: 17px;
+        padding: 14px 26px;
+      }
+      .btn-ghost {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+      .btn-ghost:hover {
+        background: var(--sunken);
+      }
+
+      /* ---------- hero ---------- */
+      .hero {
+        padding: 72px 0 40px;
+        text-align: center;
+      }
+      .hero h1 {
+        font-size: clamp(34px, 5.2vw, 56px);
+        line-height: 1.1;
+        letter-spacing: -0.025em;
+        margin: 0 0 18px;
+      }
+      .hero p.lede {
+        font-size: clamp(17px, 2.1vw, 21px);
+        color: var(--muted);
+        max-width: 640px;
+        margin: 0 auto 30px;
+      }
+      .cta-row {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .cta-note {
+        margin-top: 14px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .shot {
+        margin: 46px auto 0;
+        max-width: 100%;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        display: block;
+      }
+      /* Captured from the extension page, the popup has no window chrome, so
+         give it back the rounded corners and lift Chrome draws around a real
+         popup panel. */
+      .popup-shot {
+        display: block;
+        margin: 0 auto;
+        width: 100%;
+        max-width: 380px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        box-shadow:
+          0 2px 4px rgba(20, 24, 33, 0.08),
+          0 12px 32px rgba(20, 24, 33, 0.14);
+      }
+
+      /* ---------- sections ---------- */
+      section {
+        padding: 64px 0;
+      }
+      section + section {
+        border-top: 1px solid var(--border);
+      }
+      h2 {
+        font-size: clamp(26px, 3.4vw, 34px);
+        letter-spacing: -0.02em;
+        margin: 0 0 14px;
+      }
+      .section-lede {
+        color: var(--muted);
+        max-width: 620px;
+        margin: 0 0 36px;
+      }
+      .center {
+        text-align: center;
+      }
+      .center .section-lede {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .grid {
+        display: grid;
+        gap: 20px;
+      }
+      /* Grid items default to min-width:auto, so a wide child (the code block)
+         stretches its whole column and scrolls the page sideways on phones. */
+      .grid > *,
+      .split > * {
+        min-width: 0;
+      }
+      .grid-3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .grid-2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      @media (max-width: 820px) {
+        .grid-3,
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+      }
+      .card h3 {
+        margin: 0 0 8px;
+        font-size: 18px;
+      }
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 15.5px;
+      }
+      .step-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: var(--on-accent);
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+
+      /* ---------- rules ---------- */
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 44px;
+        align-items: center;
+      }
+      @media (max-width: 880px) {
+        .split {
+          grid-template-columns: 1fr;
+        }
+      }
+      pre {
+        background: var(--sunken);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        overflow-x: auto;
+        font-family: var(--mono);
+        font-size: 14px;
+        line-height: 1.75;
+        margin: 0;
+      }
+      code {
+        font-family: var(--mono);
+        font-size: 0.9em;
+        background: var(--sunken);
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        padding: 1px 5px;
+      }
+      pre code {
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: inherit;
+      }
+      .swatch {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        margin-right: 7px;
+        vertical-align: middle;
+      }
+      .rule-list {
+        list-style: none;
+        padding: 0;
+        margin: 22px 0 0;
+      }
+      .rule-list li {
+        padding: 9px 0;
+        border-top: 1px solid var(--border);
+        font-size: 15.5px;
+        color: var(--muted);
+      }
+      .rule-list li strong {
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 14px;
+      }
+
+      /* ---------- faq ---------- */
+      details {
+        border-bottom: 1px solid var(--border);
+        padding: 18px 0;
+      }
+      summary {
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 17px;
+        list-style: none;
+      }
+      summary::-webkit-details-marker {
+        display: none;
+      }
+      summary::after {
+        content: "+";
+        float: right;
+        color: var(--muted);
+        font-weight: 400;
+      }
+      details[open] summary::after {
+        content: "−";
+      }
+      details p {
+        color: var(--muted);
+        margin: 12px 0 0;
+        font-size: 16px;
+        max-width: 720px;
+      }
+
+      /* ---------- footer ---------- */
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 44px 0 56px;
+        color: var(--muted);
+        font-size: 15px;
+      }
+      .foot-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .foot-links {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .foot-links a {
+        color: var(--muted);
+        text-decoration: none;
+      }
+      .foot-links a:hover {
+        color: var(--text);
+      }
+      .coffee {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #ffdd00;
+        color: #0f0f0f;
+        font-weight: 700;
+        font-size: 14.5px;
+        padding: 9px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        border: 1px solid #e8c800;
+      }
+      .coffee:hover {
+        background: #ffd400;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="nav">
+      <div class="wrap nav-inner">
+        <a class="brand" href="/">
+          <img src="assets/icon.png" alt="" />
+          URLColors
+        </a>
+        <nav class="nav-links">
+          <a href="#how">How it works</a>
+          <a href="#rules">Rules</a>
+          <a href="#faq">FAQ</a>
+          <a
+            class="btn"
+            href="https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm"
+            >Add to Chrome</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="wrap">
+          <h1>Never mistake production for staging again.</h1>
+          <p class="lede">
+            Your environments look identical. URLColors puts a border around any tab whose URL
+            matches your rules, in whatever colors you pick — so you know where you are before you
+            click anything.
+          </p>
+          <div class="cta-row">
+            <a
+              class="btn btn-lg"
+              href="https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm"
+              >Add to Chrome — it's free</a
+            >
+            <a class="btn btn-lg btn-ghost" href="https://github.com/fej-snikduj/URLColors"
+              >View source</a
+            >
+          </div>
+          <p class="cta-note">
+            Free and open source · No account · No tracking or analytics · Your rules and browsing
+            data never leave your device
+          </p>
+          <img
+            class="shot"
+            src="assets/summary.jpg"
+            width="1280"
+            height="800"
+            alt="Three browser windows showing production, test and development environments, each with a differently colored border, alongside the URLColors settings popup listing the rules that produced them."
+          />
+        </div>
+      </section>
+
+      <section id="problem">
+        <div class="wrap center">
+          <h2>The app looks the same. That's the problem.</h2>
+          <p class="section-lede">
+            Dev, staging and production render pixel for pixel identically. The only thing telling
+            them apart is a string in the address bar you stopped reading months ago — right up
+            until you run the migration against the wrong database.
+          </p>
+          <div class="grid grid-3">
+            <div class="card">
+              <h3>Impossible to miss</h3>
+              <p>
+                A colored border frames the whole page. It's in your peripheral vision the entire
+                time you work, not tucked away in a toolbar.
+              </p>
+            </div>
+            <div class="card">
+              <h3>Takes a minute to set up</h3>
+              <p>
+                One line per environment: a piece of the URL and a color. Wildcards cover every
+                branch deploy and preview URL at once.
+              </p>
+            </div>
+            <div class="card">
+              <h3>Stays out of the way</h3>
+              <p>
+                Borders sit over the page without shifting layout or intercepting clicks. Snooze it
+                when you need a clean screenshot.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="how">
+        <div class="wrap center">
+          <h2>How it works</h2>
+          <p class="section-lede">Three steps, once.</p>
+          <div class="grid grid-3">
+            <div class="card">
+              <span class="step-num">1</span>
+              <h3>Install the extension</h3>
+              <p>Add it from the Chrome Web Store and pin it to your toolbar.</p>
+            </div>
+            <div class="card">
+              <span class="step-num">2</span>
+              <h3>Write your rules</h3>
+              <p>
+                Open the popup and add one line per environment — a keyword to match, and the color
+                you want.
+              </p>
+            </div>
+            <div class="card">
+              <span class="step-num">3</span>
+              <h3>Stop guessing</h3>
+              <p>
+                Every matching tab gets its border immediately, and updates the moment you change a
+                rule.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="rules">
+        <div class="wrap">
+          <div class="split">
+            <div>
+              <h2>Rules are one line each</h2>
+              <p class="section-lede">
+                A keyword to match anywhere in the URL, a color, and any options you want. Anything
+                CSS understands works as a color.
+              </p>
+              <ul class="rule-list">
+                <li><strong>keyword</strong> — matched anywhere in the tab's URL</li>
+                <li>
+                  <strong>color</strong> — <code>red</code>, <code>#ff8800</code>, any CSS color
+                </li>
+                <li><strong>flash</strong> — blink the border, with an interval in seconds</li>
+                <li><strong>width, opacity</strong> — override the defaults per rule</li>
+                <li><strong>*</strong> — wildcard, for preview and branch deploys</li>
+              </ul>
+            </div>
+            <div>
+              <pre><code><span class="swatch" style="background:#e74c3c"></span>production.myapp.com, red
+<span class="swatch" style="background:#f39c12"></span>staging.myapp.com, orange, flash, 2
+<span class="swatch" style="background:#27ae60"></span>localhost:3000, green
+
+<span class="swatch" style="background:#8e44ad"></span>*.preview.myapp.com, purple
+<span class="swatch" style="background:#c0392b"></span>admin.myapp.com, crimson, null, null, 100vw, .05</code></pre>
+              <p style="color: var(--muted); font-size: 14.5px; margin-top: 14px">
+                The last line tints the entire page instead of drawing a border — use
+                <code>100vw</code> with a low opacity. <code>null</code> skips an option you don't
+                want to set.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="settings">
+        <div class="wrap">
+          <div class="split">
+            <div>
+              <h2>Everything in one popup</h2>
+              <p class="section-lede">
+                Set defaults once, then override them per rule. Snooze every border for a few
+                minutes when you're sharing your screen, and turn it all off without uninstalling.
+              </p>
+              <ul class="rule-list">
+                <li><strong>Snooze</strong> — hide every border for a set number of minutes</li>
+                <li><strong>Defaults</strong> — border width and opacity for every rule</li>
+                <li>
+                  <strong>Console logging</strong> — see exactly why a rule did or didn't match
+                </li>
+              </ul>
+            </div>
+            <div>
+              <img
+                class="popup-shot"
+                src="assets/popup.png"
+                width="704"
+                height="1608"
+                alt="The URLColors popup showing the Active and Console logging toggles, a Snooze control, default border width and opacity fields, and a list of URL rules with a color preview dot beside each one."
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq">
+        <div class="wrap">
+          <h2>Questions</h2>
+          <p class="section-lede">The things people ask before installing.</p>
+
+          <details>
+            <summary>Does URLColors send my browsing data anywhere?</summary>
+            <p>
+              No. There is no server, no analytics and no network requests of any kind — the code
+              makes none. Your rules are stored locally in your own browser using Chrome's extension
+              storage, and the extension reads the current tab's URL only to compare it against
+              them. The source is public if you'd like to check.
+            </p>
+          </details>
+
+          <details>
+            <summary>Why does it ask for access to websites?</summary>
+            <p>
+              To draw the border, the extension has to add elements to the page you're looking at,
+              which requires permission to run on that site. It only ever reads the URL to test it
+              against your rules.
+            </p>
+          </details>
+
+          <details>
+            <summary>Does it work with localhost and custom ports?</summary>
+            <p>
+              Yes. A keyword like <code>localhost:3000</code> matches anywhere in the URL, so ports
+              and paths work the same as domains.
+            </p>
+          </details>
+
+          <details>
+            <summary>Can I match preview and branch deploy URLs?</summary>
+            <p>
+              Use a wildcard: <code>*.preview.myapp.com</code> covers every generated subdomain, so
+              you don't have to add a rule per branch.
+            </p>
+          </details>
+
+          <details>
+            <summary>Can I hide the borders temporarily?</summary>
+            <p>
+              Yes — Snooze hides every border for a set number of minutes, which is what you want
+              before a demo or a screenshot. There's also an Active toggle to switch the extension
+              off entirely without uninstalling it.
+            </p>
+          </details>
+
+          <details>
+            <summary>Will the border interfere with the page?</summary>
+            <p>
+              No. The border is drawn over the page rather than inside the layout, so nothing
+              shifts, and it doesn't capture clicks — you can interact with whatever is underneath
+              it.
+            </p>
+          </details>
+
+          <details>
+            <summary>Is it really free?</summary>
+            <p>
+              Yes, and there's no paid tier — every feature is available to everyone. If it's saved
+              you from an expensive mistake you're welcome to buy me a coffee, and supporters get a
+              cosmetic thank-you in the popup, but nothing that changes what the extension does.
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <section class="center">
+        <div class="wrap">
+          <h2>Know your environment.</h2>
+          <p class="section-lede">Set it up once and stop worrying about which tab is which.</p>
+          <a
+            class="btn btn-lg"
+            href="https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm"
+            >Add to Chrome — it's free</a
+          >
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap foot-inner">
+        <div>
+          <div style="font-weight: 600; color: var(--text)">URLColors</div>
+          <div>Free and open source.</div>
+        </div>
+        <nav class="foot-links">
+          <a
+            href="https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm"
+            >Chrome Web Store</a
+          >
+          <a href="https://github.com/fej-snikduj/URLColors">GitHub</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+        <a class="coffee" href="https://buymeacoffee.com/fejsnikduj" target="_blank" rel="noopener">
+          ☕ Buy me a coffee
+        </a>
+      </div>
+    </footer>
+  </body>
+</html>
