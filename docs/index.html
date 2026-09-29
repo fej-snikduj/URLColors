@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>URLColors — Color-code production, staging and dev tabs in Chrome</title>
+    <title>URLColors — Color-code production, staging and dev tabs</title>
     <meta
       name="description"
-      content="A free Chrome extension that puts a colored border around any tab matching your URL rules. You choose the keywords and the colors — so you never run the wrong command on the wrong environment again."
+      content="A free browser extension for Chrome, Firefox and Safari that puts a colored border around any tab matching your URL rules. You choose the keywords and the colors — so you never run the wrong command on the wrong environment again."
     />
     <link rel="canonical" href="https://www.urlcolors.com/" />
     <link rel="icon" href="assets/favicon.png" />
@@ -17,7 +17,7 @@
     <meta property="og:title" content="URLColors — Know which environment you're on, at a glance" />
     <meta
       property="og:description"
-      content="A free Chrome extension that puts a colored border around any tab matching your URL rules. You choose the keywords and the colors."
+      content="A free extension for Chrome, Firefox and Safari that puts a colored border around any tab matching your URL rules. You choose the keywords and the colors."
     />
     <meta property="og:image" content="https://www.urlcolors.com/assets/summary.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -28,8 +28,8 @@
         "@type": "SoftwareApplication",
         "name": "URLColors",
         "applicationCategory": "BrowserApplication",
-        "operatingSystem": "Chrome",
-        "description": "Chrome extension that adds a colored border around websites matching user-defined URL rules, so developers can tell production, staging and development environments apart at a glance.",
+        "operatingSystem": "Chrome, Firefox, Safari",
+        "description": "Browser extension for Chrome, Firefox and Safari that adds a colored border around websites matching user-defined URL rules, so developers can tell production, staging and development environments apart at a glance.",
         "url": "https://www.urlcolors.com/",
         "installUrl": "https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm",
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
@@ -506,6 +506,7 @@
           <a href="#faq">FAQ</a>
           <a
             class="btn"
+            id="cta-nav"
             href="https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm?utm_source=urlcolors.com&utm_medium=website&utm_campaign=nav"
             >Add to Chrome</a
           >
@@ -526,6 +527,7 @@
           <div class="cta-row">
             <a
               class="btn btn-lg"
+              id="cta-hero"
               href="https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm?utm_source=urlcolors.com&utm_medium=website&utm_campaign=hero"
               >Add to Chrome — it's free</a
             >
@@ -534,8 +536,8 @@
             >
           </div>
           <p class="cta-note">
-            Free and open source · No account · No tracking or analytics · Your rules and browsing
-            data never leave your device
+            Works on Chrome, Firefox and Safari · Free and open source · No account · No tracking or
+            analytics · Your rules and browsing data never leave your device
           </p>
           <img
             class="shot"
@@ -589,7 +591,10 @@
             <div class="card">
               <span class="step-num">1</span>
               <h3>Install the extension</h3>
-              <p>Add it from the Chrome Web Store and pin it to your toolbar.</p>
+              <p>
+                Add it from the Chrome Web Store or Firefox Add-ons, or build it for Safari — then
+                pin it to your toolbar.
+              </p>
             </div>
             <div class="card">
               <span class="step-num">2</span>
@@ -686,7 +691,7 @@
             <summary>Does URLColors send my browsing data anywhere?</summary>
             <p>
               No. There is no server, no analytics and no network requests of any kind — the code
-              makes none. Your rules are stored locally in your own browser using Chrome's extension
+              makes none. Your rules are stored locally in your own browser using its extension
               storage, and the extension reads the current tab's URL only to compare it against
               them. The source is public if you'd like to check.
             </p>
@@ -752,6 +757,7 @@
           <p class="section-lede">Set it up once and stop worrying about which tab is which.</p>
           <a
             class="btn btn-lg"
+            id="cta-closing"
             href="https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm?utm_source=urlcolors.com&utm_medium=website&utm_campaign=closing-cta"
             >Add to Chrome — it's free</a
           >
@@ -765,6 +771,7 @@
           <span class="foot-brand">URLColors</span>
           <nav class="foot-links">
             <a
+              id="cta-footer"
               href="https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm?utm_source=urlcolors.com&utm_medium=website&utm_campaign=footer"
               >Chrome Web Store</a
             >
@@ -787,5 +794,62 @@
         </p>
       </div>
     </footer>
+
+    <script>
+      (function () {
+        // Chrome, Edge, Brave, Opera and Vivaldi all install from the Chrome Web
+        // Store, so only Firefox and Safari need a different link — everyone
+        // else keeps the default markup untouched.
+        var ua = navigator.userAgent;
+        var isFirefox = /Firefox\/|FxiOS\//.test(ua);
+        var isSafari = /Safari\//.test(ua) && !/Chrome\/|Chromium\/|CriOS\/|Edg\/|OPR\//.test(ua);
+        if (!isFirefox && !isSafari) {
+          return;
+        }
+
+        var withUtm = function (baseUrl, campaign) {
+          var url = new URL(baseUrl);
+          url.searchParams.set("utm_source", "urlcolors.com");
+          url.searchParams.set("utm_medium", "website");
+          url.searchParams.set("utm_campaign", campaign);
+          return url.toString();
+        };
+
+        var cta = isFirefox
+          ? {
+              base: "https://addons.mozilla.org/en-US/firefox/addon/url-colors/",
+              nav: "Add to Firefox",
+              hero: "Add to Firefox — it's free",
+              footer: "Firefox Add-ons",
+              withUtm: true,
+            }
+          : {
+              // Not on the App Store yet — links to the build-it-yourself
+              // instructions in the README instead of a working store listing.
+              base: "https://github.com/fej-snikduj/URLColors#other-browsers",
+              nav: "Get it for Safari",
+              hero: "Get it for Safari (via Xcode)",
+              footer: "Safari (build via Xcode)",
+              withUtm: false,
+            };
+
+        [
+          ["cta-nav", "nav", "nav"],
+          ["cta-hero", "hero", "hero"],
+          ["cta-closing", "closing-cta", "hero"],
+        ].forEach(function (entry) {
+          var el = document.getElementById(entry[0]);
+          if (!el) return;
+          el.href = cta.withUtm ? withUtm(cta.base, entry[1]) : cta.base;
+          el.textContent = cta[entry[2]];
+        });
+
+        var footer = document.getElementById("cta-footer");
+        if (footer) {
+          footer.href = cta.withUtm ? withUtm(cta.base, "footer") : cta.base;
+          footer.textContent = cta.footer;
+        }
+      })();
+    </script>
   </body>
 </html>
