@@ -8,7 +8,10 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "check:manifests": "node scripts/check-manifests.mjs",
+    "check:safari": "node scripts/check-safari-resources.mjs",
+    "build:firefox": "node scripts/build-firefox.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
