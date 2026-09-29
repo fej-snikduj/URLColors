@@ -2,3 +2,8 @@
 node_modules
 .DS_Store
 dist
+
+# Xcode per-developer state, not the project itself
+xcuserdata/
+*.xcuserstate
+DerivedData/
