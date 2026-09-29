@@ -3,6 +3,7 @@ import globals from "globals";
 import prettier from "eslint-config-prettier";
 
 export default [
+  { ignores: ["dist/**"] },
   js.configs.recommended,
   prettier,
   {
@@ -17,6 +18,14 @@ export default [
     },
     rules: {
       "no-unused-vars": "warn",
+    },
+  },
+  {
+    files: ["scripts/**/*.mjs"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      globals: globals.node,
     },
   },
 ];

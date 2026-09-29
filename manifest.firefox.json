@@ -4,10 +4,18 @@
   "description": "Know your environment. A chrome extension that adds a colored border around websites that match user inputted preferences.",
   "version": "3.1.3",
   "manifest_version": 3,
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "REPLACE_WITH_EXISTING_AMO_ADDON_ID@urlcolors.com",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  },
   "host_permissions": ["https://*/*"],
   "permissions": ["storage", "tabs", "scripting"],
   "background": {
-    "service_worker": "urlColorsServiceWorker.js"
+    "scripts": ["urlColorsServiceWorker.js"]
   },
   "action": {
     "default_popup": "urlColorsPopup.html",

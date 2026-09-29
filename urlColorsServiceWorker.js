@@ -32,7 +32,10 @@ const handleSnooze = (snoozeTime) => {
 const injectContentScript = (tabId, callback) => {
   chrome.scripting.executeScript(
     {
-      target: { tabId: tabId },
+      // Matches the content_scripts declaration's all_frames: true, so a tab
+      // that was already open when the extension installs or updates gets the
+      // script in its iframes too, not just its top frame.
+      target: { tabId: tabId, allFrames: true },
       files: ["urlColorsContentScript.js"],
     },
     () => {
