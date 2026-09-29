@@ -141,7 +141,13 @@ const updatePageWithPrefs = (matchedPrefs, defaultBorderWidth, defaultOpacity) =
 };
 
 const applyPreferences = () => {
-  chrome.storage.local.get(["prefs", "snoozeUntil", "active"], (data) => {
+  chrome.storage.local.get(["prefs", "snoozeUntil", "active", "matchInIframes"], (data) => {
+    // Off by default: most embedded iframes (ads, embeds, widgets) aren't
+    // something a rule is meant to flag, and this keeps every existing rule's
+    // behavior on the page itself completely unchanged unless opted into.
+    if (window !== window.top && !data.matchInIframes) {
+      return;
+    }
     if (data.active === false || !data.prefs) {
       logMessageIfEnabled("URLColors: Extension is not active.");
       removePreviousDivs();
