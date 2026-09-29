@@ -145,7 +145,10 @@ const applyPreferences = () => {
     // Off by default: most embedded iframes (ads, embeds, widgets) aren't
     // something a rule is meant to flag, and this keeps every existing rule's
     // behavior on the page itself completely unchanged unless opted into.
+    // Still clears this frame's own borders first, in case the setting was
+    // just switched off and this frame already had some drawn.
     if (window !== window.top && !data.matchInIframes) {
+      removePreviousDivs();
       return;
     }
     if (data.active === false || !data.prefs) {
