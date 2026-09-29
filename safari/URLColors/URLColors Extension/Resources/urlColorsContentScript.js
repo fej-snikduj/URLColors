@@ -74,7 +74,7 @@ const addNewDivs = (color, flash, timer, borderWidth, opacity) => {
   bottomDiv.style.bottom = "0";
 
   divs.forEach((div) => {
-    document.body.appendChild(div);
+    document.body.parentElement.appendChild(div);
     if (isFlashing) {
       div.classList.add("urlColorAnimate");
     }
@@ -148,7 +148,16 @@ const updatePageWithPrefs = (matchedPrefs, defaultBorderWidth, defaultOpacity) =
 };
 
 const applyPreferences = () => {
-  chrome.storage.local.get(["prefs", "snoozeUntil", "active"], (data) => {
+  chrome.storage.local.get(["prefs", "snoozeUntil", "active", "matchInIframes"], (data) => {
+    // Off by default: most embedded iframes (ads, embeds, widgets) aren't
+    // something a rule is meant to flag, and this keeps every existing rule's
+    // behavior on the page itself completely unchanged unless opted into.
+    // Still clears this frame's own borders first, in case the setting was
+    // just switched off and this frame already had some drawn.
+    if (window !== window.top && !data.matchInIframes) {
+      removePreviousDivs();
+      return;
+    }
     if (data.active === false || !data.prefs) {
       logMessageIfEnabled("URLColors: Extension is not active.");
       removePreviousDivs();
