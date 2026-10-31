@@ -2,11 +2,11 @@
   "name": "URLColors",
   "short_name": "URLColors",
   "description": "Know your environment. A chrome extension that adds a colored border around websites that match user inputted preferences.",
-  "version": "3.1.3",
+  "version": "3.1.4",
   "manifest_version": 3,
   "browser_specific_settings": {
     "gecko": {
-      "id": "{74836a75-6f46-483d-8a50-c56f213c6492}",
+      "id": "urlcolors@urlcolors.com",
       "data_collection_permissions": {
         "required": ["none"]
       }

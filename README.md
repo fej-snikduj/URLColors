@@ -32,11 +32,12 @@ npm run build:firefox   # assembles dist/firefox/ (gitignored) from the shared s
 
 To test: `about:debugging#/runtime/this-firefox` → **Load Temporary Add-on** → pick `dist/firefox/manifest.json`.
 
-To publish, bump the version in both manifests, zip the contents of `dist/firefox/`, and upload it as a new version of
-the existing [URLColors listing](https://addons.mozilla.org/en-US/firefox/addon/url-colors/) in the
-[AMO developer hub](https://addons.mozilla.org/developers/). `manifest.firefox.json`'s `gecko.id` is that listing's
-existing add-on ID — don't change it, since a different ID creates a separate add-on rather than updating the
-current one and orphaning its users.
+To publish, bump the version in both manifests, zip the contents of `dist/firefox/`, and upload it in the
+[AMO developer hub](https://addons.mozilla.org/developers/). `manifest.firefox.json`'s `gecko.id`
+(`urlcolors@urlcolors.com`) is this project's permanent add-on ID — don't change it, since a different ID creates a
+separate add-on instead of updating the existing one. (The older
+[URLColors listing](https://addons.mozilla.org/en-US/firefox/addon/url-colors/) was published from an unrelated AMO
+account under a different ID and can't be updated from here.)
 
 ### Safari
 
