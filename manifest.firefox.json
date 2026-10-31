@@ -6,7 +6,7 @@
   "manifest_version": 3,
   "browser_specific_settings": {
     "gecko": {
-      "id": "REPLACE_WITH_EXISTING_AMO_ADDON_ID@urlcolors.com",
+      "id": "{74836a75-6f46-483d-8a50-c56f213c6492}",
       "data_collection_permissions": {
         "required": ["none"]
       }
