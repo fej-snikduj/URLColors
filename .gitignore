@@ -7,3 +7,6 @@ dist
 xcuserdata/
 *.xcuserstate
 DerivedData/
+
+# Per-developer Xcode signing settings
+safari/URLColors/Signing.local.xcconfig
