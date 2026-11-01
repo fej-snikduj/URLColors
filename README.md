@@ -47,16 +47,7 @@ npm run check:safari   # fails if those copies no longer match the repo root
 
 **To test locally** (no paid account needed): open the project in Xcode, select the **URLColors** scheme, and Run.
 The wrapper app that launches explains how to enable the extension — you'll need to turn on "Allow Unsigned
-Extensions" in Safari's Developer settings first, unless you build signed with your own team (below).
-
-**To build signed with your own Apple team**, put your team ID in `safari/URLColors/Signing.local.xcconfig`
-(git-ignored, so it never lands in the repo):
-
-```
-DEVELOPMENT_TEAM = ABCDE12345
-```
-
-Set it there rather than in Xcode's Signing & Capabilities tab, which would write it into the project file.
+Extensions" in Safari's Developer settings first, since the build isn't signed.
 
 ### Chromium-based browsers (Edge, Brave, Opera, Vivaldi, …)
 
