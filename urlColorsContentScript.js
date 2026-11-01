@@ -27,9 +27,16 @@ const removePreviousDivs = () => {
 const addNewDivs = (color, flash, timer, borderWidth, opacity) => {
   const isFlashing = flash === "flash";
   if (isFlashing) {
+    // Insert as CSS rules rather than innerHTML: a style element only has a
+    // .sheet once it's attached to the document, hence appendChild first.
     const style = document.createElement("style");
-    style.innerHTML = `.urlColorAnimate { animation: blinker ${timer || DEFAULT_FLASH_TIMER}s linear infinite; } @keyframes blinker { 0% { opacity: ${opacity}; } 50% { opacity: 0; } 100% { opacity: ${opacity}; } }`;
     document.getElementsByTagName("head")[0].appendChild(style);
+    style.sheet.insertRule(
+      `.urlColorAnimate { animation: blinker ${timer || DEFAULT_FLASH_TIMER}s linear infinite; }`
+    );
+    style.sheet.insertRule(
+      `@keyframes blinker { 0% { opacity: ${opacity}; } 50% { opacity: 0; } 100% { opacity: ${opacity}; } }`
+    );
   }
   const leftDiv = document.createElement("div");
   const rightDiv = document.createElement("div");
