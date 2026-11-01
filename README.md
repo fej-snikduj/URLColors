@@ -58,8 +58,15 @@ Extensions" in Safari's Developer settings first, since this isn't signed with a
 
 **To publish to the App Store**: requires enrolling in the
 [Apple Developer Program](https://developer.apple.com/programs/) (paid, identity-verified — only the account owner
-can do this), then setting that team in the project's Signing & Capabilities before archiving and distributing
-through Xcode Organizer.
+can do this). Put your team ID in `safari/URLColors/Signing.local.xcconfig` (git-ignored, so it never lands in the
+repo):
+
+```
+DEVELOPMENT_TEAM = ABCDE12345
+```
+
+Then archive and distribute through Xcode Organizer. Don't set the team in Xcode's Signing & Capabilities tab
+instead — that writes it into the project file.
 
 ### Chromium-based browsers (Edge, Brave, Opera, Vivaldi, …)
 
