@@ -1,6 +1,6 @@
 # URLColors
 
-A browser extension that highlights the body of a webpage with a colored border for URLs that match user settings. Runs in Chrome and other Chromium browsers (Edge, Brave, Opera, Vivaldi), with Firefox and Safari builds also in this repo — see [Other browsers](#other-browsers).
+A browser extension that highlights the body of a webpage with a colored border for URLs that match user settings.
 
 This extension allows you to flag specified websites by highlighting the website with a colored border. This is especially useful for developers who run their web applications on many different environments and who are constantly switching between a dev, test, and production version of an app or database. Because the application may look the same on all environments, it's easy to accidentally do something on the production environment that shouldn't have been done.
 
@@ -8,7 +8,9 @@ With URLColors, you can easily have the browser flag important websites for you 
 
 Website: www.urlcolors.com
 
-Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm?utm_source=github&utm_medium=readme) (works in Edge, Brave and other Chromium browsers too).
+Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm?utm_source=github&utm_medium=readme).
+
+Works in Chrome and other Chromium browsers (Edge, Brave, Opera, Vivaldi), plus Firefox and Safari — see [Other browsers](#other-browsers).
 
 Trusted by 9,000+ users.
 
@@ -23,7 +25,7 @@ extra steps. The other targets read from the same source files, packaged differe
 
 Firefox's Manifest V3 needs `background.scripts` instead of Chrome's `background.service_worker`, and a
 [`browser_specific_settings.gecko.id`](https://extensionworkshop.com/documentation/develop/extensions-and-the-add-on-id/)
-to publish, so Firefox gets its own manifest, `manifest.firefox.json`. Everything else in it is kept identical to
+for Firefox to accept it, so Firefox gets its own manifest, `manifest.firefox.json`. Everything else in it is kept identical to
 `manifest.json` on purpose — `npm run check:manifests` fails if they drift apart on any key other than those two.
 
 ```bash
@@ -32,14 +34,7 @@ npm run build:firefox   # assembles dist/firefox/ (gitignored) from the shared s
 
 To test: `about:debugging#/runtime/this-firefox` → **Load Temporary Add-on** → pick `dist/firefox/manifest.json`.
 
-The maintained listing is
-[URLColors on Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/url-colors-env-detection/). To publish a
-new version, bump the version in both manifests, zip the contents of `dist/firefox/`, and upload it in the
-[AMO developer hub](https://addons.mozilla.org/developers/). `manifest.firefox.json`'s `gecko.id`
-(`urlcolors@urlcolors.com`) is this project's permanent add-on ID — don't change it, since a different ID creates a
-separate add-on instead of updating the existing one. (An older
-[URLColors listing](https://addons.mozilla.org/en-US/firefox/addon/url-colors/) was published from an unrelated AMO
-account under a different ID and can't be updated from here.)
+`manifest.firefox.json`'s `gecko.id` identifies the published add-on, so leave it as is.
 
 ### Safari
 
@@ -54,22 +49,8 @@ npm run check:safari   # fails if those copies no longer match the repo root
 
 **To test locally** (no paid account needed): open the project in Xcode, select the **URLColors** scheme, and Run.
 The wrapper app that launches explains how to enable the extension — you'll need to turn on "Allow Unsigned
-Extensions" in Safari's Developer settings first, since this isn't signed with a real team yet.
-
-**To publish to the App Store**: requires enrolling in the
-[Apple Developer Program](https://developer.apple.com/programs/) (paid, identity-verified — only the account owner
-can do this). Put your team ID in `safari/URLColors/Signing.local.xcconfig` (git-ignored, so it never lands in the
-repo):
-
-```
-DEVELOPMENT_TEAM = ABCDE12345
-```
-
-Then archive and distribute through Xcode Organizer. Don't set the team in Xcode's Signing & Capabilities tab
-instead — that writes it into the project file.
+Extensions" in Safari's Developer settings first, since the build isn't signed.
 
 ### Chromium-based browsers (Edge, Brave, Opera, Vivaldi, …)
 
-These already load the Chrome build as-is; no changes needed. Edge has its own store
-([Partner Center](https://partner.microsoft.com/dashboard/microsoftedge/overview)) if a separate listing there is
-wanted for discoverability — same package, no code changes.
+These already load the Chrome build as-is; no changes needed.
