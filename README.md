@@ -1,6 +1,6 @@
 # URLColors
 
-Chrome Extension to highlight the body of a webpage with colored border for URL's that match user settings.
+A browser extension that highlights the body of a webpage with a colored border for URLs that match user settings. Runs in Chrome and other Chromium browsers (Edge, Brave, Opera, Vivaldi), with Firefox and Safari builds also in this repo — see [Other browsers](#other-browsers).
 
 This extension allows you to flag specified websites by highlighting the website with a colored border. This is especially useful for developers who run their web applications on many different environments and who are constantly switching between a dev, test, and production version of an app or database. Because the application may look the same on all environments, it's easy to accidentally do something on the production environment that shouldn't have been done.
 
@@ -8,7 +8,7 @@ With URLColors, you can easily have the browser flag important websites for you 
 
 Website: www.urlcolors.com
 
-Chrome web store: https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm?utm_source=github&utm_medium=readme
+Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm?utm_source=github&utm_medium=readme) (works in Edge, Brave and other Chromium browsers too).
 
 Trusted by 9,000+ users.
 
