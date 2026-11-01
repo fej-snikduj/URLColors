@@ -23,7 +23,7 @@ extra steps. The other targets read from the same source files, packaged differe
 
 Firefox's Manifest V3 needs `background.scripts` instead of Chrome's `background.service_worker`, and a
 [`browser_specific_settings.gecko.id`](https://extensionworkshop.com/documentation/develop/extensions-and-the-add-on-id/)
-to publish, so Firefox gets its own manifest, `manifest.firefox.json`. Everything else in it is kept identical to
+for Firefox to accept it, so Firefox gets its own manifest, `manifest.firefox.json`. Everything else in it is kept identical to
 `manifest.json` on purpose — `npm run check:manifests` fails if they drift apart on any key other than those two.
 
 ```bash
@@ -32,14 +32,7 @@ npm run build:firefox   # assembles dist/firefox/ (gitignored) from the shared s
 
 To test: `about:debugging#/runtime/this-firefox` → **Load Temporary Add-on** → pick `dist/firefox/manifest.json`.
 
-The maintained listing is
-[URLColors on Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/url-colors-env-detection/). To publish a
-new version, bump the version in both manifests, zip the contents of `dist/firefox/`, and upload it in the
-[AMO developer hub](https://addons.mozilla.org/developers/). `manifest.firefox.json`'s `gecko.id`
-(`urlcolors@urlcolors.com`) is this project's permanent add-on ID — don't change it, since a different ID creates a
-separate add-on instead of updating the existing one. (An older
-[URLColors listing](https://addons.mozilla.org/en-US/firefox/addon/url-colors/) was published from an unrelated AMO
-account under a different ID and can't be updated from here.)
+`manifest.firefox.json`'s `gecko.id` identifies the published add-on, so leave it as is.
 
 ### Safari
 
@@ -54,22 +47,17 @@ npm run check:safari   # fails if those copies no longer match the repo root
 
 **To test locally** (no paid account needed): open the project in Xcode, select the **URLColors** scheme, and Run.
 The wrapper app that launches explains how to enable the extension — you'll need to turn on "Allow Unsigned
-Extensions" in Safari's Developer settings first, since this isn't signed with a real team yet.
+Extensions" in Safari's Developer settings first, unless you build signed with your own team (below).
 
-**To publish to the App Store**: requires enrolling in the
-[Apple Developer Program](https://developer.apple.com/programs/) (paid, identity-verified — only the account owner
-can do this). Put your team ID in `safari/URLColors/Signing.local.xcconfig` (git-ignored, so it never lands in the
-repo):
+**To build signed with your own Apple team**, put your team ID in `safari/URLColors/Signing.local.xcconfig`
+(git-ignored, so it never lands in the repo):
 
 ```
 DEVELOPMENT_TEAM = ABCDE12345
 ```
 
-Then archive and distribute through Xcode Organizer. Don't set the team in Xcode's Signing & Capabilities tab
-instead — that writes it into the project file.
+Set it there rather than in Xcode's Signing & Capabilities tab, which would write it into the project file.
 
 ### Chromium-based browsers (Edge, Brave, Opera, Vivaldi, …)
 
-These already load the Chrome build as-is; no changes needed. Edge has its own store
-([Partner Center](https://partner.microsoft.com/dashboard/microsoftedge/overview)) if a separate listing there is
-wanted for discoverability — same package, no code changes.
+These already load the Chrome build as-is; no changes needed.
