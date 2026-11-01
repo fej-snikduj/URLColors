@@ -3,7 +3,7 @@
   "version": "3.1.4",
   "private": true,
   "type": "module",
-  "description": "Chrome Extension to highlight the body of a webpage with colored border for URL's that match user settings.",
+  "description": "Browser extension that highlights the body of a webpage with a colored border for URLs that match user settings.",
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
