@@ -1,199 +1,208 @@
-const DEFAULT_FLASH_TIMER = "1";
-
-// A rule's trailing values are positional, so "null" (or an empty slot) lets a
-// rule skip flash/timer and still set its own border width or opacity.
-const optionalValue = (value) => {
-  const trimmed = value?.trim();
-  return !trimmed || trimmed.toLowerCase() === "null" ? undefined : trimmed;
-};
-
-const logMessageIfEnabled = (...args) => {
-  chrome.storage.local.get(["logging"], (data) => {
-    if (data.logging) {
-      console.log(...args);
-    }
-  });
-};
-
-const removePreviousDivs = () => {
-  const divs = document.getElementsByClassName("colordiv");
-  Object.keys(divs).forEach(() => {
-    if (divs[0]) {
-      divs[0].parentNode.removeChild(divs[0]);
-    }
-  });
-};
-
-const addNewDivs = (color, flash, timer, borderWidth, opacity) => {
-  const isFlashing = flash === "flash";
-  if (isFlashing) {
-    // Insert as CSS rules rather than innerHTML: a style element only has a
-    // .sheet once it's attached to the document, hence appendChild first.
-    const style = document.createElement("style");
-    document.getElementsByTagName("head")[0].appendChild(style);
-    style.sheet.insertRule(
-      `.urlColorAnimate { animation: blinker ${timer || DEFAULT_FLASH_TIMER}s linear infinite; }`
-    );
-    style.sheet.insertRule(
-      `@keyframes blinker { 0% { opacity: ${opacity}; } 50% { opacity: 0; } 100% { opacity: ${opacity}; } }`
-    );
+(() => {
+  // The manifest and the service worker can both inject this file into the same
+  // tab, and a second run would redeclare everything below.
+  if (globalThis.__urlColorsLoaded) {
+    return;
   }
-  const leftDiv = document.createElement("div");
-  const rightDiv = document.createElement("div");
-  const topDiv = document.createElement("div");
-  const bottomDiv = document.createElement("div");
+  globalThis.__urlColorsLoaded = true;
 
-  const divs = [leftDiv, rightDiv, topDiv, bottomDiv];
-  const horizontal = [topDiv, bottomDiv];
-  const vertical = [rightDiv, leftDiv];
+  const DEFAULT_FLASH_TIMER = "1";
 
-  divs.forEach((div) => {
-    div.setAttribute("class", "colordiv");
-    div.style.background = color;
-    div.style.position = "fixed";
-    div.style.opacity = opacity;
-    div.style.zIndex = "99999999999999";
-    div.style.pointerEvents = "none";
-  });
+  // A rule's trailing values are positional, so "null" (or an empty slot) lets a
+  // rule skip flash/timer and still set its own border width or opacity.
+  const optionalValue = (value) => {
+    const trimmed = value?.trim();
+    return !trimmed || trimmed.toLowerCase() === "null" ? undefined : trimmed;
+  };
 
-  horizontal.forEach((div) => {
-    div.style.left = "0";
-    div.style.right = "0";
-    div.style.height = borderWidth;
-  });
-
-  vertical.forEach((div) => {
-    div.style.top = "0";
-    div.style.bottom = "0";
-    div.style.width = borderWidth;
-  });
-
-  leftDiv.style.left = "0";
-  rightDiv.style.right = "0";
-  topDiv.style.top = "0";
-  bottomDiv.style.bottom = "0";
-
-  divs.forEach((div) => {
-    document.body.parentElement.appendChild(div);
-    if (isFlashing) {
-      div.classList.add("urlColorAnimate");
-    }
-  });
-
-  // The side strips run the full page height, so they overlap the top and
-  // bottom strips at each corner, and with opacity below 1 those squares render
-  // darker than the rest of the border. Stop the side strips at the top and
-  // bottom strips instead. Skipped when the top and bottom strips already meet
-  // (the 100vw full-page tint), where all four strips deliberately stack and
-  // insetting would halve the tint people have tuned. Measured in pixels
-  // because borderWidth can be any CSS length (vw, em, %).
-  const borderPx = topDiv.getBoundingClientRect().height;
-  if (borderPx * 2 < document.documentElement.clientHeight) {
-    vertical.forEach((div) => {
-      div.style.top = borderWidth;
-      div.style.bottom = borderWidth;
+  const logMessageIfEnabled = (...args) => {
+    chrome.storage.local.get(["logging"], (data) => {
+      if (data.logging) {
+        console.log(...args);
+      }
     });
-  }
-};
+  };
 
-const getMatchedPrefs = (prefs) => {
-  const currentUrl = window.location.href;
-  const matchedPrefs = [];
+  const removePreviousDivs = () => {
+    const divs = document.getElementsByClassName("colordiv");
+    Object.keys(divs).forEach(() => {
+      if (divs[0]) {
+        divs[0].parentNode.removeChild(divs[0]);
+      }
+    });
+  };
 
-  prefs.keywords.split("\n").forEach((line) => {
-    if (!line) {
-      return;
-    }
-    // Parse the line for keyword and settings
-    const [keyword, color, rawFlash, rawTimer, rawBorderWidth, rawOpacity] = line
-      .split(",")
-      .map((s) => s.trim());
-    const flash = optionalValue(rawFlash);
-    const timer = optionalValue(rawTimer);
-    const borderWidth = optionalValue(rawBorderWidth) ?? prefs?.borderWidth;
-    const opacity = optionalValue(rawOpacity) ?? prefs?.opacity;
-    const regex = new RegExp(keyword.replace(/\*/g, ".*"), "i"); // Convert wildcard to regex pattern
-
-    // If the current URL matches the keyword pattern
-    if (regex.test(currentUrl)) {
-      matchedPrefs.push({ keyword, color, flash, timer, borderWidth, opacity });
-    }
-  });
-  return matchedPrefs;
-};
-
-const updatePageWithPrefs = (matchedPrefs, defaultBorderWidth, defaultOpacity) => {
-  // Get the current tab URL
-  const currentUrl = window.location.href;
-
-  // Iterate through each line of preferences
-  matchedPrefs.forEach((pref) => {
-    // Parse the line for keyword and settings
-    const {
-      keyword,
-      color,
-      flash,
-      timer,
-      borderWidth = defaultBorderWidth,
-      opacity = defaultOpacity,
-    } = pref;
-    const regex = new RegExp(keyword.replace(/\*/g, ".*"), "i"); // Convert wildcard to regex pattern
-
-    // If the current URL matches the keyword pattern
-    if (regex.test(currentUrl)) {
-      removePreviousDivs();
-      addNewDivs(color, flash, timer, borderWidth, opacity);
-    }
-  });
-};
-
-const applyPreferences = () => {
-  chrome.storage.local.get(["prefs", "snoozeUntil", "active", "matchInIframes"], (data) => {
-    // Off by default: most embedded iframes (ads, embeds, widgets) aren't
-    // something a rule is meant to flag, and this keeps every existing rule's
-    // behavior on the page itself completely unchanged unless opted into.
-    // Still clears this frame's own borders first, in case the setting was
-    // just switched off and this frame already had some drawn.
-    if (window !== window.top && !data.matchInIframes) {
-      removePreviousDivs();
-      return;
-    }
-    if (data.active === false || !data.prefs) {
-      logMessageIfEnabled("URLColors: Extension is not active.");
-      removePreviousDivs();
-      return;
-    }
-    const now = Date.now();
-    if (data.snoozeUntil && data.snoozeUntil > now) {
-      logMessageIfEnabled("URLColors: Extension is snoozed.");
-      removePreviousDivs();
-      return;
-    }
-    const matchedPrefs = getMatchedPrefs(data.prefs);
-    if (matchedPrefs.length === 0) {
-      logMessageIfEnabled(
-        `URLColors: No match found for URL: ${window.location.href}.`,
-        data.prefs
+  const addNewDivs = (color, flash, timer, borderWidth, opacity) => {
+    const isFlashing = flash === "flash";
+    if (isFlashing) {
+      // Insert as CSS rules rather than innerHTML: a style element only has a
+      // .sheet once it's attached to the document, hence appendChild first.
+      const style = document.createElement("style");
+      document.getElementsByTagName("head")[0].appendChild(style);
+      style.sheet.insertRule(
+        `.urlColorAnimate { animation: blinker ${timer || DEFAULT_FLASH_TIMER}s linear infinite; }`
       );
-      removePreviousDivs();
-      return;
+      style.sheet.insertRule(
+        `@keyframes blinker { 0% { opacity: ${opacity}; } 50% { opacity: 0; } 100% { opacity: ${opacity}; } }`
+      );
     }
-    logMessageIfEnabled(
-      `URLColors: ${matchedPrefs.length} match(s) found for URL: ${window.location.href}. Updating page with border preferences.`,
-      matchedPrefs
-    );
-    updatePageWithPrefs(matchedPrefs, data?.prefs?.borderWidth, data?.prefs?.opacity);
-  });
-};
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === "ping") {
-    // Respond to indicate the script is present
-    sendResponse({ status: "present" });
-  }
-  if (message.action === "updateTab") {
-    applyPreferences();
-    sendResponse("updated tab");
-  }
-});
+    const leftDiv = document.createElement("div");
+    const rightDiv = document.createElement("div");
+    const topDiv = document.createElement("div");
+    const bottomDiv = document.createElement("div");
 
-document.addEventListener("DOMContentLoaded", applyPreferences);
+    const divs = [leftDiv, rightDiv, topDiv, bottomDiv];
+    const horizontal = [topDiv, bottomDiv];
+    const vertical = [rightDiv, leftDiv];
+
+    divs.forEach((div) => {
+      div.setAttribute("class", "colordiv");
+      div.style.background = color;
+      div.style.position = "fixed";
+      div.style.opacity = opacity;
+      div.style.zIndex = "99999999999999";
+      div.style.pointerEvents = "none";
+    });
+
+    horizontal.forEach((div) => {
+      div.style.left = "0";
+      div.style.right = "0";
+      div.style.height = borderWidth;
+    });
+
+    vertical.forEach((div) => {
+      div.style.top = "0";
+      div.style.bottom = "0";
+      div.style.width = borderWidth;
+    });
+
+    leftDiv.style.left = "0";
+    rightDiv.style.right = "0";
+    topDiv.style.top = "0";
+    bottomDiv.style.bottom = "0";
+
+    divs.forEach((div) => {
+      document.body.parentElement.appendChild(div);
+      if (isFlashing) {
+        div.classList.add("urlColorAnimate");
+      }
+    });
+
+    // The side strips run the full page height, so they overlap the top and
+    // bottom strips at each corner, and with opacity below 1 those squares render
+    // darker than the rest of the border. Stop the side strips at the top and
+    // bottom strips instead. Skipped when the top and bottom strips already meet
+    // (the 100vw full-page tint), where all four strips deliberately stack and
+    // insetting would halve the tint people have tuned. Measured in pixels
+    // because borderWidth can be any CSS length (vw, em, %).
+    const borderPx = topDiv.getBoundingClientRect().height;
+    if (borderPx * 2 < document.documentElement.clientHeight) {
+      vertical.forEach((div) => {
+        div.style.top = borderWidth;
+        div.style.bottom = borderWidth;
+      });
+    }
+  };
+
+  const getMatchedPrefs = (prefs) => {
+    const currentUrl = window.location.href;
+    const matchedPrefs = [];
+
+    prefs.keywords.split("\n").forEach((line) => {
+      if (!line) {
+        return;
+      }
+      // Parse the line for keyword and settings
+      const [keyword, color, rawFlash, rawTimer, rawBorderWidth, rawOpacity] = line
+        .split(",")
+        .map((s) => s.trim());
+      const flash = optionalValue(rawFlash);
+      const timer = optionalValue(rawTimer);
+      const borderWidth = optionalValue(rawBorderWidth) ?? prefs?.borderWidth;
+      const opacity = optionalValue(rawOpacity) ?? prefs?.opacity;
+      const regex = new RegExp(keyword.replace(/\*/g, ".*"), "i"); // Convert wildcard to regex pattern
+
+      // If the current URL matches the keyword pattern
+      if (regex.test(currentUrl)) {
+        matchedPrefs.push({ keyword, color, flash, timer, borderWidth, opacity });
+      }
+    });
+    return matchedPrefs;
+  };
+
+  const updatePageWithPrefs = (matchedPrefs, defaultBorderWidth, defaultOpacity) => {
+    // Get the current tab URL
+    const currentUrl = window.location.href;
+
+    // Iterate through each line of preferences
+    matchedPrefs.forEach((pref) => {
+      // Parse the line for keyword and settings
+      const {
+        keyword,
+        color,
+        flash,
+        timer,
+        borderWidth = defaultBorderWidth,
+        opacity = defaultOpacity,
+      } = pref;
+      const regex = new RegExp(keyword.replace(/\*/g, ".*"), "i"); // Convert wildcard to regex pattern
+
+      // If the current URL matches the keyword pattern
+      if (regex.test(currentUrl)) {
+        removePreviousDivs();
+        addNewDivs(color, flash, timer, borderWidth, opacity);
+      }
+    });
+  };
+
+  const applyPreferences = () => {
+    chrome.storage.local.get(["prefs", "snoozeUntil", "active", "matchInIframes"], (data) => {
+      // Off by default: most embedded iframes (ads, embeds, widgets) aren't
+      // something a rule is meant to flag, and this keeps every existing rule's
+      // behavior on the page itself completely unchanged unless opted into.
+      // Still clears this frame's own borders first, in case the setting was
+      // just switched off and this frame already had some drawn.
+      if (window !== window.top && !data.matchInIframes) {
+        removePreviousDivs();
+        return;
+      }
+      if (data.active === false || !data.prefs) {
+        logMessageIfEnabled("URLColors: Extension is not active.");
+        removePreviousDivs();
+        return;
+      }
+      const now = Date.now();
+      if (data.snoozeUntil && data.snoozeUntil > now) {
+        logMessageIfEnabled("URLColors: Extension is snoozed.");
+        removePreviousDivs();
+        return;
+      }
+      const matchedPrefs = getMatchedPrefs(data.prefs);
+      if (matchedPrefs.length === 0) {
+        logMessageIfEnabled(
+          `URLColors: No match found for URL: ${window.location.href}.`,
+          data.prefs
+        );
+        removePreviousDivs();
+        return;
+      }
+      logMessageIfEnabled(
+        `URLColors: ${matchedPrefs.length} match(s) found for URL: ${window.location.href}. Updating page with border preferences.`,
+        matchedPrefs
+      );
+      updatePageWithPrefs(matchedPrefs, data?.prefs?.borderWidth, data?.prefs?.opacity);
+    });
+  };
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "ping") {
+      // Respond to indicate the script is present
+      sendResponse({ status: "present" });
+    }
+    if (message.action === "updateTab") {
+      applyPreferences();
+      sendResponse("updated tab");
+    }
+  });
+
+  document.addEventListener("DOMContentLoaded", applyPreferences);
+})();
