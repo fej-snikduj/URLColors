@@ -8,7 +8,7 @@ With URLColors, you can easily have the browser flag important websites for you 
 
 Website: www.urlcolors.com
 
-Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm?utm_source=github&utm_medium=readme).
+Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm?utm_source=github&utm_medium=readme), [Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/urlcolors/cdoalbcobgfnhdmkgeacpaongangjfpk?utm_source=github&utm_medium=readme) or [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/url-colors-env-detection/?utm_source=github&utm_medium=readme).
 
 Works in Chrome and other Chromium browsers (Edge, Brave, Opera, Vivaldi), plus Firefox and Safari — see [Other browsers](#other-browsers).
 
