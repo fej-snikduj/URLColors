@@ -18,8 +18,17 @@ Initially built in 2017 by [@fej-snikduj](https://www.github.com/fej-snikduj) an
 
 ## Other browsers
 
-The source at the repo root (`manifest.json` + the `urlColors*.js`/`.html` files) is the Chrome build and needs no
-extra steps. The other targets read from the same source files, packaged differently per browser.
+The source at the repo root (`manifest.json` + the `urlColors*.js`/`.html` files) is the Chrome build and runs as is
+(load the repo folder as an unpacked extension). The other targets read from the same source files, packaged
+differently per browser.
+
+To build an upload package containing only the files the extension needs (no docs, images or tooling):
+
+```bash
+npm run build:chrome    # dist/urlcolors-chrome-<version>.zip: Chrome Web Store and Edge Add-ons
+npm run build:firefox   # dist/urlcolors-firefox-<version>.zip: addons.mozilla.org
+npm run build           # both
+```
 
 ### Firefox
 
@@ -29,7 +38,7 @@ for Firefox to accept it, so Firefox gets its own manifest, `manifest.firefox.js
 `manifest.json` on purpose — `npm run check:manifests` fails if they drift apart on any key other than those two.
 
 ```bash
-npm run build:firefox   # assembles dist/firefox/ (gitignored) from the shared source + manifest.firefox.json
+npm run build:firefox   # stages dist/firefox/ (gitignored) from the shared source + manifest.firefox.json, then zips it
 ```
 
 To test: `about:debugging#/runtime/this-firefox` → **Load Temporary Add-on** → pick `dist/firefox/manifest.json`.
