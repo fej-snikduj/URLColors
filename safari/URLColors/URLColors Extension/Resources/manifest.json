@@ -2,7 +2,7 @@
   "name": "URLColors: Environment Indicator",
   "short_name": "URLColors",
   "description": "Color-code production, staging and dev tabs. Adds a colored border to pages whose URL matches your rules.",
-  "version": "3.1.5",
+  "version": "3.1.6",
   "manifest_version": 3,
   "host_permissions": ["https://*/*"],
   "permissions": ["storage", "tabs", "scripting"],
