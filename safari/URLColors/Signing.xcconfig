@@ -1,0 +1,4 @@
+// Per-developer signing settings go in Signing.local.xcconfig (git-ignored), e.g.:
+//   DEVELOPMENT_TEAM = ABCDE12345
+// The include is optional, so builds without that file still work unsigned.
+#include? "Signing.local.xcconfig"
