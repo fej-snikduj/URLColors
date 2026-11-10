@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>How to Tell Staging from Production in Your Browser</title>
+    <meta
+      name="description"
+      content="Running a command against the wrong environment is easy when staging and production look identical. Here are the ways to tell them apart in your browser, and how to set up color-coded tabs in two minutes."
+    />
+    <link
+      rel="canonical"
+      href="https://www.urlcolors.com/guides/tell-production-from-staging.html"
+    />
+    <link rel="icon" href="../assets/favicon.png" />
+
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:url"
+      content="https://www.urlcolors.com/guides/tell-production-from-staging.html"
+    />
+    <meta property="og:title" content="How to tell staging from production in your browser" />
+    <meta
+      property="og:description"
+      content="Why environment mix-ups happen, and the practical ways to prevent them: naming, banners, browser profiles and color-coded tabs."
+    />
+    <meta property="og:image" content="https://www.urlcolors.com/assets/summary.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "How to tell staging from production in your browser",
+        "datePublished": "2026-11-09",
+        "dateModified": "2026-11-09",
+        "author": { "@type": "Person", "name": "Jeff Judkins" },
+        "publisher": {
+          "@type": "Organization",
+          "name": "URLColors",
+          "url": "https://www.urlcolors.com/"
+        },
+        "mainEntityOfPage": "https://www.urlcolors.com/guides/tell-production-from-staging.html"
+      }
+    </script>
+
+    <style>
+      :root {
+        --bg: #ffffff;
+        --border: #e2e5ea;
+        --text: #15181e;
+        --muted: #5c6470;
+        --accent: #2f6fed;
+        --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #101216;
+          --border: #2a2f39;
+          --text: #e9ebf0;
+          --muted: #9aa3b2;
+          --accent: #5b9dff;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font);
+        font-size: 17px;
+        line-height: 1.65;
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: var(--accent);
+      }
+      .wrap {
+        width: 100%;
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      header {
+        border-bottom: 1px solid var(--border);
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        height: 64px;
+        font-weight: 700;
+        font-size: 18px;
+        text-decoration: none;
+        color: var(--text);
+      }
+      .brand img {
+        width: 28px;
+        height: 28px;
+        display: block;
+      }
+      main {
+        padding: 48px 0 72px;
+      }
+      h1 {
+        font-size: clamp(30px, 5vw, 40px);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        margin: 0 0 8px;
+      }
+      h2 {
+        font-size: 21px;
+        margin: 36px 0 8px;
+      }
+      p {
+        margin: 0 0 14px;
+      }
+      .updated {
+        color: var(--muted);
+        font-size: 15px;
+        margin-bottom: 28px;
+      }
+      ul,
+      ol {
+        margin: 0 0 14px;
+        padding-left: 22px;
+      }
+      li {
+        margin-bottom: 6px;
+      }
+      code,
+      pre {
+        font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+        font-size: 0.9em;
+      }
+      pre {
+        background: color-mix(in srgb, var(--border) 40%, transparent);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 16px;
+        overflow-x: auto;
+        margin: 0 0 14px;
+      }
+      .cta {
+        display: inline-block;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 600;
+        padding: 12px 22px;
+        border-radius: 8px;
+        text-decoration: none;
+      }
+      @media (prefers-color-scheme: dark) {
+        .cta {
+          color: #0b0f18;
+        }
+      }
+      .crumbs {
+        font-size: 14px;
+        color: var(--muted);
+        margin: 0 0 14px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <div class="wrap">
+        <a class="brand" href="/">
+          <img src="../assets/icon.png" alt="" />
+          URLColors
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <article class="wrap">
+        <p class="crumbs"><a href="/">URLColors</a> › Guides</p>
+        <h1>How to tell staging from production in your browser</h1>
+        <p class="updated">Updated November 9, 2026</p>
+
+        <p>
+          Almost every team has a story about it: someone ran a migration, deleted a record or
+          refunded an order, and only afterwards noticed the tab was production. The cause is rarely
+          carelessness. It's that staging and production are built to be identical, so the one thing
+          that tells them apart is a hostname in the address bar that you stopped reading weeks ago.
+        </p>
+        <p>
+          This guide covers the common ways to make the environment obvious, what each is good at,
+          and how to set up color-coded tabs in about two minutes.
+        </p>
+
+        <h2>Why the mistake is so easy to make</h2>
+        <ul>
+          <li>Environments run the same code, so the pages look and behave the same.</li>
+          <li>
+            The only difference is a URL fragment such as <code>staging.</code>,
+            <code>-dev</code> or a port number, and the eye skips it.
+          </li>
+          <li>
+            You usually have several tabs open for several environments at once, and you switch
+            between them quickly.
+          </li>
+          <li>The cost is lopsided: a wrong click in staging is free, in production it isn't.</li>
+        </ul>
+
+        <h2>Ways to make the environment obvious</h2>
+
+        <h3>1. A banner or ribbon in your own app</h3>
+        <p>
+          Many teams add a "STAGING" ribbon to non-production builds. It's effective and costs
+          nothing at runtime, but it only covers apps you control, and it has to be built and kept
+          up to date in every one of them. It does nothing for a vendor dashboard, a cloud console
+          or a third-party admin panel.
+        </p>
+
+        <h3>2. Favicon badges and tab-title prefixes</h3>
+        <p>
+          Prefixing the title with <code>[STG]</code> or swapping the favicon helps when you scan
+          the tab strip. They are small, though, and with twenty tabs open they blend in. They also
+          disappear from view once you're focused on the page itself.
+        </p>
+
+        <h3>3. Separate browser profiles</h3>
+        <p>
+          Keeping production in its own profile or window is a strong separation. It also means
+          separate logins, extensions and bookmarks, which people tend to abandon after a week.
+        </p>
+
+        <h3>4. Color-code the page itself</h3>
+        <p>
+          A colored border or tint around the whole page sits in your peripheral vision the entire
+          time you work, whatever site you're on and whether or not you own it. This is what
+          <a href="/">URLColors</a> does, and it's the lowest-effort option that covers third-party
+          sites.
+        </p>
+
+        <h2>Set up color-coded environments in two minutes</h2>
+        <ol>
+          <li>
+            Install URLColors from the
+            <a
+              href="https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm?utm_source=urlcolors.com&amp;utm_medium=website&amp;utm_campaign=guide"
+              >Chrome Web Store</a
+            >,
+            <a
+              href="https://microsoftedge.microsoft.com/addons/detail/urlcolors/cdoalbcobgfnhdmkgeacpaongangjfpk?utm_source=urlcolors.com&amp;utm_medium=website&amp;utm_campaign=guide"
+              >Edge Add-ons</a
+            >
+            or
+            <a
+              href="https://addons.mozilla.org/en-US/firefox/addon/url-colors-env-detection/?utm_source=urlcolors.com&amp;utm_medium=website&amp;utm_campaign=guide"
+              >Firefox Add-ons</a
+            >, and pin it to your toolbar.
+          </li>
+          <li>Open the popup and add one rule per line: a piece of the URL, then a color.</li>
+          <li>Open an environment. The matching tabs get a border straight away.</li>
+        </ol>
+        <p>Example rules:</p>
+        <pre><code>production.myapp.com, red
+staging.myapp.com, orange
+localhost:3000, green
+*.preview.myapp.com, purple</code></pre>
+
+        <h2>Tips for a scheme that holds up</h2>
+        <ul>
+          <li>
+            <strong>Use the same colors everywhere.</strong> Red for production, orange or yellow
+            for staging and UAT, green for local. Consistency is what makes it automatic.
+          </li>
+          <li>
+            <strong>Save the loudest style for production.</strong> Add flashing or a thicker border
+            to the one environment where a mistake costs money.
+          </li>
+          <li>
+            <strong>Match what actually differs.</strong> A keyword matches anywhere in the URL, so
+            you can match a subdomain, a port, or a path like <code>/admin</code>.
+          </li>
+          <li>
+            <strong>Use wildcards for preview deploys.</strong> One <code>*.preview.myapp.com</code>
+            rule covers every branch URL.
+          </li>
+          <li>
+            <strong>Snooze before you share your screen.</strong> A few minutes of snooze gives you
+            a clean screenshot or demo, and the borders come back on their own.
+          </li>
+        </ul>
+
+        <h2>Frequently asked</h2>
+        <p>
+          <strong>Does this stop me from clicking in production?</strong> No. It makes the
+          environment impossible to miss, which is what prevents most mistakes. It doesn't block or
+          confirm actions.
+        </p>
+        <p>
+          <strong>Does it send my browsing data anywhere?</strong> No. Your rules stay in your
+          browser and the extension makes no network requests. Read the
+          <a href="../privacy.html">privacy policy</a> or the
+          <a href="https://github.com/fej-snikduj/URLColors">source code</a>.
+        </p>
+
+        <p style="margin-top: 32px">
+          <a
+            class="cta"
+            href="https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm?utm_source=urlcolors.com&amp;utm_medium=website&amp;utm_campaign=guide-cta"
+            >Add URLColors — it's free</a
+          >
+        </p>
+      </article>
+    </main>
+  </body>
+</html>
