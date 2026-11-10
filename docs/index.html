@@ -4,20 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>URLColors — Color-code production, staging and dev tabs</title>
+    <title>URLColors: Color-Code Production, Staging &amp; Dev Tabs</title>
     <meta
       name="description"
-      content="A free browser extension for Chrome, Edge, Firefox and Safari that puts a colored border around any tab matching your URL rules. You choose the keywords and the colors — so you never run the wrong command on the wrong environment again."
+      content="A free environment indicator for Chrome, Edge, Firefox and Safari. Adds a colored border to production, staging and dev tabs so you never run the wrong command on the wrong environment."
     />
     <link rel="canonical" href="https://www.urlcolors.com/" />
     <link rel="icon" href="assets/favicon.png" />
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.urlcolors.com/" />
-    <meta property="og:title" content="URLColors — Know which environment you're on, at a glance" />
+    <meta property="og:title" content="URLColors — Tell production from staging at a glance" />
     <meta
       property="og:description"
-      content="A free extension for Chrome, Edge, Firefox and Safari that puts a colored border around any tab matching your URL rules. You choose the keywords and the colors."
+      content="A free environment indicator for Chrome, Edge, Firefox and Safari. Color-code production, staging and dev tabs with a border you can't miss."
     />
     <meta property="og:image" content="https://www.urlcolors.com/assets/summary.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -27,9 +27,18 @@
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "URLColors",
-        "applicationCategory": "BrowserApplication",
+        "alternateName": "URLColors environment indicator",
+        "applicationCategory": "DeveloperApplication",
+        "applicationSubCategory": "Browser extension",
         "operatingSystem": "Chrome, Edge, Firefox, Safari",
-        "description": "Browser extension for Chrome, Edge, Firefox and Safari that adds a colored border around websites matching user-defined URL rules, so developers can tell production, staging and development environments apart at a glance.",
+        "description": "Free, open-source environment indicator for Chrome, Edge, Firefox and Safari. Adds a colored border around websites matching user-defined URL rules, so developers, QA and DevOps can tell production, staging and development environments apart at a glance.",
+        "featureList": [
+          "Color-code production, staging, QA and development tabs",
+          "Match by URL keyword, localhost port or wildcard subdomain",
+          "Custom border color, width, opacity and flashing",
+          "Snooze borders before screen shares and screenshots",
+          "No account, no tracking, no network requests"
+        ],
         "url": "https://www.urlcolors.com/",
         "installUrl": "https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm",
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
@@ -547,6 +556,7 @@
         <nav class="nav-links">
           <a href="#browsers">Browsers</a>
           <a href="#how">How it works</a>
+          <a href="#use-cases">Use cases</a>
           <a href="#rules">Rules</a>
           <a href="#faq">FAQ</a>
           <a
@@ -565,9 +575,10 @@
           <p class="proof">Trusted by 9,000+ users since 2017</p>
           <h1>Never mistake production for staging again.</h1>
           <p class="lede">
-            Your environments look identical. URLColors puts a border around any tab whose URL
-            matches your rules, in whatever colors you pick — so you know where you are before you
-            click anything.
+            Your environments look identical. URLColors is a free environment indicator for your
+            browser: it puts a colored border around any tab whose URL matches your rules —
+            production in red, staging in orange, dev in green — so you know where you are before
+            you click anything.
           </p>
           <div class="cta-row">
             <a
@@ -788,10 +799,125 @@
         </div>
       </section>
 
+      <section id="use-cases">
+        <div class="wrap center">
+          <h2>Built for anyone who works in more than one environment</h2>
+          <p class="section-lede">
+            If two versions of a site look the same and only the URL differs, URLColors can tell
+            them apart for you.
+          </p>
+          <div class="grid grid-3">
+            <div class="card">
+              <h3>Developers</h3>
+              <p>
+                Keep <code>localhost</code>, dev, staging and production straight while you deploy,
+                run migrations and read logs across a dozen tabs.
+              </p>
+            </div>
+            <div class="card">
+              <h3>QA and testers</h3>
+              <p>
+                Know at a glance whether you're filing a bug against the test build, UAT or the live
+                site, and stop polluting production data with test accounts.
+              </p>
+            </div>
+            <div class="card">
+              <h3>DevOps, SRE and support</h3>
+              <p>
+                Flag the production admin console, database UI or cloud dashboard before you click
+                something you can't undo.
+              </p>
+            </div>
+          </div>
+          <p class="section-lede" style="margin-top: 28px">
+            It works on any site you can write a rule for: your own apps, third-party dashboards,
+            admin panels, CMS and e-commerce staging sites, preview deploys, and sandbox versus
+            production accounts that live on different URLs.
+          </p>
+        </div>
+      </section>
+
+      <section id="compare">
+        <div class="wrap center">
+          <h2>Why a border, and not another banner?</h2>
+          <p class="section-lede">
+            There are plenty of ways to mark an environment. Most only work if you control the site.
+          </p>
+          <div class="grid grid-3">
+            <div class="card">
+              <h3>Works on sites you don't own</h3>
+              <p>
+                A banner in your own app needs a code change in every environment. URLColors lives
+                in your browser, so it also marks the vendor dashboard and the admin panel you can't
+                edit.
+              </p>
+            </div>
+            <div class="card">
+              <h3>Bigger than a favicon badge</h3>
+              <p>
+                Favicon badges and tab-title prefixes are tiny and vanish when you have twenty tabs
+                open. A colored frame around the page is hard to ignore.
+              </p>
+            </div>
+            <div class="card">
+              <h3>Lighter than browser profiles</h3>
+              <p>
+                Separate profiles keep environments apart, but cost you logins, extensions and
+                history. One rule per environment costs you nothing.
+              </p>
+            </div>
+          </div>
+          <p class="section-lede" style="margin-top: 28px">
+            Read the guide:
+            <a href="guides/tell-production-from-staging.html"
+              >How to tell staging from production in your browser</a
+            >.
+          </p>
+        </div>
+      </section>
+
       <section id="faq">
         <div class="wrap">
           <h2>Questions</h2>
           <p class="section-lede">The things people ask before installing.</p>
+
+          <details>
+            <summary>How do I tell staging from production in my browser?</summary>
+            <p>
+              Don't rely on reading the address bar. Add one URLColors rule per environment, such as
+              <code>production.myapp.com, red</code> and <code>staging.myapp.com, orange</code>, and
+              every matching tab gets a colored border around the page. The color tells you the
+              environment before you read anything. There's a longer walkthrough in the
+              <a href="guides/tell-production-from-staging.html">staging vs production guide</a>.
+            </p>
+          </details>
+
+          <details>
+            <summary>Does it stop me from making changes in production?</summary>
+            <p>
+              No. URLColors doesn't block clicks or ask for confirmation. It makes the environment
+              impossible to overlook, which is usually what prevents the mistake: you notice the red
+              border before you run the query, not after.
+            </p>
+          </details>
+
+          <details>
+            <summary>Which browsers does it work in?</summary>
+            <p>
+              Chrome, Microsoft Edge, Firefox and Safari, plus other Chromium browsers such as
+              Brave, Opera and Vivaldi, which install it from the Chrome Web Store. The rules and
+              behavior are the same in every browser.
+            </p>
+          </details>
+
+          <details>
+            <summary>Does it work on sites I don't control, like cloud consoles?</summary>
+            <p>
+              Yes. It only needs to read the page's URL, so it works on any site where the
+              environments are distinguishable by address: separate subdomains, ports, paths or
+              hostnames. It doesn't need any change to the site itself.
+            </p>
+          </details>
 
           <details>
             <summary>Does URLColors send my browsing data anywhere?</summary>
@@ -893,6 +1019,8 @@
             >
             <a href="https://github.com/fej-snikduj/URLColors">GitHub</a>
             <a href="#faq">FAQ</a>
+            <a href="guides/tell-production-from-staging.html">Guide</a>
+            <a href="privacy.html">Privacy</a>
           </nav>
           <a
             class="coffee"

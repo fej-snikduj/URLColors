@@ -1,14 +1,17 @@
 {
   "name": "urlcolors",
-  "version": "3.1.3",
+  "version": "3.1.5",
   "private": true,
   "type": "module",
-  "description": "Chrome Extension to highlight the body of a webpage with colored border for URL's that match user settings.",
+  "description": "Browser extension that highlights the body of a webpage with a colored border for URLs that match user settings.",
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "check:manifests": "node scripts/check-manifests.mjs",
+    "check:safari": "node scripts/check-safari-resources.mjs",
+    "build:firefox": "node scripts/build-firefox.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
