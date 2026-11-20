@@ -49,6 +49,12 @@ const handleMigration = () => {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+  // The Mac App Store requires In-App Purchase for donations (guideline 3.1.1),
+  // so the Safari build doesn't show any. Other browsers keep the support links.
+  if (location.protocol === "safari-web-extension:") {
+    document.body.classList.add("no-donations");
+  }
+
   // Handle Migration if necessary.
   handleMigration();
   // Define elements

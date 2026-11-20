@@ -152,6 +152,13 @@
         display: none;
       }
 
+      /* Safari build: no donation links (see urlColorsPopup.js). */
+      body.no-donations #support-badge,
+      body.no-donations #supporter-badge,
+      body.no-donations .card.support {
+        display: none !important;
+      }
+
       @keyframes shimmer {
         to {
           background-position: 200% center;
