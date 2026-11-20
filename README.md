@@ -1,12 +1,18 @@
 # URLColors
 
-A browser extension that highlights the body of a webpage with a colored border for URLs that match user settings.
+**An environment indicator for your browser.** URLColors puts a colored border around any tab whose URL matches your rules, so you can tell production, staging and dev apart at a glance and stop doing things in the wrong environment.
 
-This extension allows you to flag specified websites by highlighting the website with a colored border. This is especially useful for developers who run their web applications on many different environments and who are constantly switching between a dev, test, and production version of an app or database. Because the application may look the same on all environments, it's easy to accidentally do something on the production environment that shouldn't have been done.
+It's a simple tool for identifying which web environment you're in. Developers often run the same app in dev, test, staging and production, and the environments look identical, so it's easy to do something in production that you meant to do somewhere else. URLColors makes the environment obvious: match a keyword against the tab URL, pick a border color and width, and optionally make it blink.
 
-With URLColors, you can easily have the browser flag important websites for you by specifying the keyword to match against the tab url, the border color, width, whether or not the border should blink, and the interval of blinking.
+**Who it's for:** anyone who works across several environments of the same site. Developers deploying and debugging, QA testers filing bugs against the right build, and DevOps, SRE and support teams working in production consoles and admin panels all use it to avoid acting in the wrong place.
 
-Website: www.urlcolors.com
+- Color-code production, staging and dev tabs
+- Match any part of the URL, including localhost ports and wildcard subdomains
+- Choose color, width, opacity and blinking, and snooze it before a screen share
+- Works on sites you don't control, like cloud consoles and admin panels
+- No account, no tracking, no network requests
+
+Website: [www.urlcolors.com](https://www.urlcolors.com)
 
 Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/urlcolors/jjccpcminoppplpmcfghflolejbdkekm?utm_source=github&utm_medium=readme), [Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/urlcolors/cdoalbcobgfnhdmkgeacpaongangjfpk?utm_source=github&utm_medium=readme), [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/url-colors-env-detection/?utm_source=github&utm_medium=readme) or the [Mac App Store](https://apps.apple.com/app/id6829335357) (Safari).
 
