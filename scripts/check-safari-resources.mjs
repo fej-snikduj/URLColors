@@ -4,18 +4,7 @@
 // in the project). Nothing stops those copies drifting from the real source
 // when only one side gets edited, so this fails the build if they ever differ.
 import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-
-const root = fileURLToPath(new URL("..", import.meta.url));
-const safariResources = `${root}safari/URLColors/URLColors Extension/Resources/`;
-
-const SHARED_FILES = [
-  "manifest.json",
-  "urlColorsContentScript.js",
-  "urlColorsServiceWorker.js",
-  "urlColorsPopup.html",
-  "urlColorsPopup.js",
-];
+import { root, safariResources, SHARED_FILES } from "./safari-files.mjs";
 
 const problems = [];
 for (const name of SHARED_FILES) {
@@ -32,7 +21,7 @@ if (problems.length > 0) {
   );
   console.error(problems.map((f) => `  ${f}`).join("\n"));
   console.error(
-    "\nCopy the current file(s) over (they're plain copies, not a build step) and rebuild the Xcode project to confirm it still compiles."
+    "\nRun `npm run sync:safari` to copy them over, then rebuild the Xcode project to confirm it still compiles."
   );
   process.exit(1);
 }

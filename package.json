@@ -11,6 +11,7 @@
     "format:check": "prettier --check .",
     "check:manifests": "node scripts/check-manifests.mjs",
     "check:safari": "node scripts/check-safari-resources.mjs",
+    "sync:safari": "node scripts/sync-safari-resources.mjs",
     "build:chrome": "node scripts/build-package.mjs chrome",
     "build:firefox": "node scripts/build-package.mjs firefox",
     "build": "npm run build:chrome && npm run build:firefox"
