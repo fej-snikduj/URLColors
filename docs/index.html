@@ -652,7 +652,7 @@
             <a
               class="browser-card"
               id="browser-safari"
-              href="https://github.com/fej-snikduj/URLColors#other-browsers"
+              href="https://apps.apple.com/app/id6829335357"
             >
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path
@@ -660,7 +660,7 @@
                 ></path>
               </svg>
               <strong>Safari</strong>
-              <span>Coming soon</span>
+              <span>Mac App Store</span>
             </a>
           </div>
         </div>
@@ -709,8 +709,8 @@
               <span class="step-num">1</span>
               <h3>Install the extension</h3>
               <p>
-                Add it from the Chrome Web Store, Edge Add-ons or Firefox Add-ons (Safari is coming
-                soon), then pin it to your toolbar.
+                Add it from the Chrome Web Store, Edge Add-ons, Firefox Add-ons or the Mac App Store
+                (for Safari), then pin it to your toolbar.
               </p>
             </div>
             <div class="card">
@@ -1078,13 +1078,11 @@
                 withUtm: true,
               }
             : {
-                // Not on the App Store yet — links to the build-it-yourself
-                // instructions in the README instead of a working store listing.
-                // Swap for the Mac App Store link once the listing is live.
-                base: "https://github.com/fej-snikduj/URLColors#other-browsers",
-                nav: "Safari: coming soon",
-                hero: "Safari version coming soon",
-                footer: "Safari (coming soon)",
+                // App Store links take their own campaign tokens, not utm_*.
+                base: "https://apps.apple.com/app/id6829335357",
+                nav: "Add to Safari",
+                hero: "Add to Safari — it's free",
+                footer: "Mac App Store",
                 withUtm: false,
               };
 
